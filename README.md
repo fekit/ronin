@@ -1,2 +1,3 @@
-Takara
-======
+# TakaraBako
+
+Code name: **JavaScript Revolution**
