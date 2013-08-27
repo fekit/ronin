@@ -1,4 +1,6 @@
-# JavaScript Revolution
+# Takara
+
+Code name: **JavaScript Revolution**
 
 本项目是一个 JavaScript 解决方案、增强库，旨在解决原生 JavaScript 函数/方法所无法处理的事情，让 JavaScript 开发者们编写功能模块时少写些代码、更加得心应手！
 
