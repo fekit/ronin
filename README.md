@@ -30,6 +30,6 @@
 
 ## 建议反馈
 
-如果您有任何问题、建议或者发现有“臭虫”混进来了，请发 [issue](https://github.com/jsrev/jsrev.github.com/issues) 给我。
+如果您有任何问题、建议或者发现有“臭虫”混进来了，请发 [issue](https://github.com/ourai/Takara/issues) 给我。
 
 Thanks for your helps!!! ;-)
