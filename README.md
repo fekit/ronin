@@ -4,13 +4,11 @@
 
 本项目（Code name: JavaScript Revolution）是一个 JavaScript 解决方案、增强库，旨在解决原生 JavaScript 函数/方法所无法处理的事情，让 JavaScript 开发者们编写功能模块时少写些代码、更加得心应手！
 
-若要进行相关问题或其他前端开发问题的讨论，请加 QQ 群 218023770。申请时请输入验证信息——
-
-> GitHub JavaScript Revolution
+若要进行相关问题或其他前端开发问题的讨论，请加 QQ 群 218023770。申请时请输入验证信息： **GitHub JavaScript Revolution** 。
 
 ## 为何需要革命？
 
-> “哪里有压迫，哪里就有反抗”
+> 哪里有压迫，哪里就有反抗！
 
 因为各种各样的原因，JavaScript 设计得用起来不是很方便，原生的方法无法满足如今复杂的开发需求。于是每位开发者都不得不重复造轮子，写一些工具方法。
 
