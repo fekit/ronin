@@ -272,13 +272,12 @@ module.exports = {
             var origin = right ? [].reduceRight : [].reduce;
             var hasInitVal = args.length > 2;
 
-            if ( !origin ) {
+            if ( origin ) {
                 result = origin.apply( array, (hasInitVal ? [callback, initialValue] : [callback]) );
             }
             else {
                 var index = 0;
                 var length = array.length;
-                console.log("self");
 
                 if ( !hasInitVal ) {
                     initialValue = array[0];
@@ -299,8 +298,45 @@ module.exports = {
         }
 
         return result;
+    },
+
+    /**
+     * Flattens a nested array.
+     *
+     * @method  flatten
+     * @param   array {Array}   a nested array
+     * @return  {Array}
+     */
+    flatten: function( array ) {
+        var result = flattenArray.call( this, array );
+
+        return this.isArray( result ) ? result : [];
     }
 };
+
+/**
+ * A internal usage to flatten a nested array.
+ *
+ * @private
+ * @method  flattenArray
+ * @param   array {Array}
+ * @return  {Mixed}
+ */
+function flattenArray( array ) {
+    var lib = this;
+    var arr = [];
+
+    if ( lib.isArray( array ) ) {
+        lib.each( array, function( n, i ) {
+            arr = arr.concat( flattenArray.call( lib, n ) );
+        });
+    }
+    else {
+        arr = array;
+    }
+
+    return arr;
+}
 
 /**
  * 获取小数点后面的位数
