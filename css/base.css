@@ -1,0 +1,157 @@
+@CHARSET "UTF-8";
+
+
+
+/* --- Reset --- */
+
+body, div, ul, ol, li, dl, dt, dd, h1, h2, h3, h4, h5, h6, pre, form, blockquote { margin: 0; padding: 0; }
+body { font: normal normal 100%/1.5 Tahoma, Verdana, "BitStream vera Sans", Arial, Helvetica, Sans-serif; color: #333; }
+
+table { border-collapse: collapse; }
+td, th { padding: 5px 8px; }
+
+ul { list-style: none outside none; }
+p {
+    text-align: justify; text-justify: inter-ideograph;
+    padding: 3px 0; margin: 8px 0;
+    hyphens: auto; line-height: 1.8;
+}
+img { border: 0; }
+code { font-size: 0.9em; font-family: Monaco,Consolas, "Lucida Console", monospace, "Courier New", Courier, Serif; padding: 0 5px; margin: 0 3px; }
+
+
+
+/* --- Float --- */
+
+.fl { float: left; }
+.fr { float: right; }
+
+
+
+/* --- Font --- */
+
+.lang_zh { font-family: "Microsoft Yahei", "Hiragino Sans GB", Tahoma, Arial, Verdana, Sans-serif; }
+.lang_jp { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic Pro", Meiryo, "MS PGothic", Sans-serif; }
+.lang_en { font-family: "Palatino Linotype", Palatino, Georgia, Serif; }
+
+.smaller { font-size: .85em; }
+.larger { font-size: 1.2em; }
+
+
+
+/* --- Clearfix --- */
+
+.clr { display: inline-block; }
+[class~="clr"], html[xmlns] .clr { display: block; }
+* html .clr { height: 1%; }
+.clr:after { content: "\20"; display: block; clear: both; visibility: hidden; line-height: 0; height: 0; }
+
+.clr-b { clear: both; }
+
+
+
+/* --- Absolute Center --- */
+
+.abs-ctr { display: table; height: 100%; width: 100%; #position: relative; overflow: hidden; }
+.abs-ctr-wrp { display: table-cell; vertical-align: middle; #position: absolute; #top: 50%; } 
+.abs-ctr-cnt { width: 100%; #position: relative; #top: -50%; margin: 0 auto; }
+
+
+
+/* --- List Table --- */
+
+.table-list { table-layout: fixed; width: 100%; background-color: #FFF; }
+.table-list th, .table-list td { border-width: 1px; }
+.table-list thead th, .table-list tfoot th { text-align: left; background: -moz-linear-gradient(center top, #FFF, #CCC 100%); }
+
+
+
+/* --- Form Table --- */
+
+.table-form { width: 100%; }
+.table-form caption { text-align: left; font-weight: bold; }
+.table-form th { border-width: 1px 0; }
+.table-form td { border-width: 1px 0 1px 1px; }
+.table-form tbody th { text-align: right; font-weight: normal; }
+
+
+
+/* --- Form Elements --- */
+
+.input-form, .submit-form { font-size: 1em; line-height: 2.2; height: 2.2em; padding: 0 5px; }
+.input-form { border-radius: 3px; border-width: 1px; }
+.submit-form { cursor: pointer; }
+input.disabled { background-color: #F5F5F5; }
+
+
+
+/* --- Triangle Arrows --- */
+
+.tri { display: block; width: 0; height: 0; text-indent: -999em; border: 0 solid transparent; }
+.tri-t { border-top-width: 0 !important; border-bottom-color: #000; }
+.tri-r { border-right-width: 0 !important; border-left-color: #000; }
+.tri-b { border-bottom-width: 0 !important; border-top-color: #000; }
+.tri-l { border-left-width: 0 !important; border-right-color: #000; }
+
+
+
+/* --- Box Modules --- */
+
+.bb { box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; }
+.lf { word-wrap: break-word; word-wrap: normal\0; word-break: break-all; white-space: normal; }
+
+
+
+/* --- Dilation --- */
+
+.vd { padding-bottom: 50000px !important; margin-bottom: -50000px !important; }
+
+
+
+/* --- Text --- */
+
+.txt-elp { white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis; }
+.txt-c { text-align: center !important; }
+.txt-l { text-align: left !important; }
+.txt-r { text-align: right !important; }
+.txt-hide { font: 0/0 a; text-shadow: none; color: transparent; }
+.txt-forbid { -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
+
+
+
+/* --- Typography --- */
+
+.drop-caps { float: left; font-size: 3em; margin: 0 5px 0 0; line-height: 1em; }
+
+
+
+/* --- Non-reset --- */
+
+ul.n-rst { list-style: disc outside none; margin: 0 0 1em 0; padding-left: 2em; }
+ol.n-rst { list-style: decimal outside none; margin: 1em 0; padding-left: 2em; }
+h1.n-rst { margin: 0.67em 0; }
+h2.n-rst { margin: 0.8em 0; }
+
+
+
+/* --- Effects --- */
+
+.border-relief { box-shadow: 0 0 2em -0.6em #666, 1px 1px #EEE, -1px -1px #E5E5E5; }
+.flipH {
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;  /*IE*/
+}
+
+
+
+/* --- Layout --- */
+
+.dib-wrap { font-size: 0; *word-spacing: -1px; }
+.dib-wrap .dib { font-size: 100%; letter-spacing: normal; word-spacing: normal; vertical-align: top; }
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    .dib-wrap { letter-spacing: -5px; }
+}
+.dib { display: inline-block; *display: inline; *zoom: 1; }

@@ -1,0 +1,13 @@
+---
+layout: default
+---
+
+<h1>JavaScript</h1>
+<p><span>is so poor that it needs a </span><strong>REVOLUTION</strong><span>!!!</span></p>
+<ul class="n-rst">
+{% for page in site.pages %}
+	{% if page.title %}
+	<li><a href="{{ page.url }}">{{ page.title }}</a></li>
+	{% endif %}
+{% endfor %}
+</ul>
