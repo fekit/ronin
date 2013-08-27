@@ -1,6 +1,6 @@
-# Takara
+# Takara (Code name: JavaScript Revolution)
 
-Code name: **JavaScript Revolution**
+**Takara** 是日语「宝」的罗马音，为“宝藏”的意思，意味着本项目能够帮助开发者找到他们梦寐以求的宝藏！
 
 本项目是一个 JavaScript 解决方案、增强库，旨在解决原生 JavaScript 函数/方法所无法处理的事情，让 JavaScript 开发者们编写功能模块时少写些代码、更加得心应手！
 
