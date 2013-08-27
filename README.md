@@ -29,7 +29,3 @@
 如果您有任何问题、建议或者发现有“臭虫”混进来了，请发 [issue](https://github.com/jsrev/jsrev.github.com/issues) 给我。
 
 Thank you for your helps!!! ;-)
-
-## 相关链接
-
-- [API Document](/wiki/API-Document, "查看 API 文档")
