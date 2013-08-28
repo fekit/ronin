@@ -105,6 +105,49 @@ var L = {
     },
 
     /**
+     * Returns the namespace specified and creates it if it doesn't exist.
+     * Be careful when naming packages.
+     * Reserved words may work in some browsers and not others.
+     *
+     * @method  namespace
+     * @param   [hostObj] {Object}      Host object namespace will be added to
+     * @param   [ns_str_1] {String}     The first namespace string
+     * @param   [ns_str_2] {String}     The second namespace string
+     * @param   [ns_str_*] {String}     Numerous namespace string
+     * @param   [global] {Boolean}      Whether set window as the host object
+     * @return  {Object}                A reference to the last namespace object created
+     */
+    namespace: function() {
+        var args = arguments;
+        var lib = this;
+        var ns = {};
+        var hostObj = args[0];
+        
+        // Determine the host object.
+        if ( !lib.isPlainObject( hostObj ) ) {
+            hostObj = args[args.length - 1] === true ? window : this;
+        }
+
+        lib.each( args, function( arg ) {
+            if ( lib.isString( arg ) && /^[a-z0-1_\-\.]+$/i.test( arg ) ) {
+                var obj = hostObj;
+
+                lib.each( arg.split("."), function( part, idx, parts ) {
+                    if ( obj[ part ] === undefined ) {
+                        obj[ part ] = idx === parts.length - 1 ? null : {};
+                    }
+
+                    obj = obj[ part ];
+                });
+
+                ns = obj;
+            }
+        });
+
+        return ns;
+    },
+
+    /**
      * 获取对象类型
      * 
      * @method  type
