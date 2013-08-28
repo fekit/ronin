@@ -417,7 +417,7 @@ function getMaxMin( initialValue, funcName, collection, callback, context ) {
     if ( isCollection.call( this, collection ) ) {
         var existCallback = this.isFunction( callback );
 
-        if ( !existCallback && this.isArray( collection ) ) {
+        if ( !existCallback && this.isArray( collection ) && collection[0] === +collection[0] && collection.length < 65535 ) {
             return Math[funcName].apply( Math, collection );
         }
 
