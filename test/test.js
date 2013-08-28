@@ -1,9 +1,3 @@
-var timers = setInterval(function() {
-    if ( window.JR ) {
-        clearInterval( timers );
-    }
-}, 100);
-
 function filterElement() {
     // Object
     JR.filter(

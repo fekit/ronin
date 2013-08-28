@@ -360,8 +360,6 @@ module.exports = {
 
     /**
      * Return the maximum element or (element-based computation).
-     * Can't optimize arrays of integers longer than 65,535 elements.
-     * See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
      *
      * @method  max
      * @param   target {Array/Object}
@@ -370,35 +368,11 @@ module.exports = {
      * @return  {Number}
      */
     max: function( target, callback, context ) {
-        var result = { "value": -Infinity, "computed": -Infinity };
-
-        if ( isCollection.call( this, target ) ) {
-            var existCallback = this.isFunction( callback );
-
-            if ( !existCallback && this.isArray( target ) ) {
-                return Math.max.apply( Math, target );
-            }
-
-            if ( arguments.length < 3 ) {
-                context = window;
-            }
-
-            this.each( target, function( val, idx, list ) {
-                var computed = existCallback ? callback.apply( context, [val, idx, list] ) : val;
-
-                if ( computed > result.computed ) {
-                    result = { "value": val, "computed": computed };
-                }
-            });
-        }
-
-        return result.value;
+        return getMaxMin.apply(this, [-Infinity, "max", target, callback, (arguments.length < 3 ? window : context)]);
     },
 
     /**
      * Return the minimum element (or element-based computation).
-     * Can't optimize arrays of integers longer than 65,535 elements.
-     * See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
      *
      * @method  min
      * @param   target {Array/Object}
@@ -407,29 +381,7 @@ module.exports = {
      * @return  {Number}
      */
     min: function( target, callback, context ) {
-        var result = { "value": Infinity, "computed": Infinity };
-
-        if ( isCollection.call( this, target ) ) {
-            var existCallback = this.isFunction( callback );
-
-            if ( !existCallback && this.isArray( target ) ) {
-                return Math.min.apply( Math, target );
-            }
-
-            if ( arguments.length < 3 ) {
-                context = window;
-            }
-
-            this.each( target, function( val, idx, list ) {
-                var computed = existCallback ? callback.apply( context, [val, idx, list] ) : val;
-
-                if ( computed < result.computed ) {
-                    result = { "value": val, "computed": computed };
-                }
-            });
-        }
-
-        return result.value;
+        return getMaxMin.apply(this, [Infinity, "min", target, callback, (arguments.length < 3 ? window : context)]);
     }
 };
 
@@ -443,6 +395,43 @@ module.exports = {
  */
 function isCollection( target ) {
     return this.isArray( target ) || this.isPlainObject( target );
+}
+
+/**
+ * Return the maximum (or the minimum) element (or element-based computation).
+ * Can't optimize arrays of integers longer than 65,535 elements.
+ * See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
+ *
+ * @private
+ * @method  getMaxMin
+ * @param   initialValue {Number}       Default return value of function
+ * @param   funcName {String}           Method's name of Math object
+ * @param   collection {Array/Object}   A collection to be manipulated
+ * @param   callback {Function}         Callback for every element of the collection
+ * @param   [context] {Mixed}           Context of the callback
+ * @return  {Number}
+ */
+function getMaxMin( initialValue, funcName, collection, callback, context ) {
+    var result = { "value": initialValue, "computed": initialValue };
+
+    if ( isCollection.call( this, collection ) ) {
+        var existCallback = this.isFunction( callback );
+
+        if ( !existCallback && this.isArray( collection ) ) {
+            return Math[funcName].apply( Math, collection );
+        }
+
+        this.each( collection, function( val, idx, list ) {
+            var computed = existCallback ? callback.apply( context, [val, idx, list] ) : val;
+
+            if ( funcName === "max" && computed > result.computed ||
+                    funcName === "min" && computed < result.computed ) {
+                result = { "value": val, "computed": computed };
+            }
+        });
+    }
+
+    return result.value;
 }
 
 /**
