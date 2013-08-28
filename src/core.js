@@ -25,11 +25,11 @@ var L = {
     /**
      * 扩展指定对象
      * 
-     * @method  mix
+     * @method  mixin
      * @param   unspecified {Mixed}
      * @return  {Object}
      */
-    mix: function() {
+    mixin: function() {
         var args = arguments;
         var target = args[0] || {};
         var i = 1;
@@ -79,7 +79,7 @@ var L = {
 
         if ( type in { "object": true, "function": true } ) {
             for ( name in object ) {
-                if ( callback.apply( object[name], [ object[name], name ] ) === false ) {
+                if ( callback.apply( object[name], [ object[name], name, object ] ) === false ) {
                     break;
                 }
             }
@@ -95,7 +95,7 @@ var L = {
                     ele = object.charAt(index);
                 }
 
-                if ( callback.apply( object[index], [ ele, index++ ] ) === false ) {
+                if ( callback.apply( object[index], [ ele, index++, object ] ) === false ) {
                     break;
                 }
             }
@@ -292,6 +292,24 @@ var L = {
         }
 
         return result;
+    },
+
+    /**
+     * Returns a random integer between min and max, inclusive.
+     * If you only pass one argument, it will return a number between 0 and that number.
+     *
+     * @method  random
+     * @param   min {Number}
+     * @param   max {Number}
+     * @return  {Number}
+     */
+    random: function( min, max ) {
+        if ( max == null ) {
+            max = min;
+            min = 0;
+        }
+
+        return min + Math.floor( Math.random() * ( max - min + 1 ) );
     }
     /**
      * 别名
