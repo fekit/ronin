@@ -292,6 +292,24 @@ var L = {
         }
 
         return result;
+    },
+
+    /**
+     * Returns a random integer between min and max, inclusive.
+     * If you only pass one argument, it will return a number between 0 and that number.
+     *
+     * @method  random
+     * @param   min {Number}
+     * @param   max {Number}
+     * @return  {Number}
+     */
+    random: function( min, max ) {
+        if ( max == null ) {
+            max = min;
+            min = 0;
+        }
+
+        return min + Math.floor( Math.random() * ( max - min + 1 ) );
     }
     /**
      * 别名
