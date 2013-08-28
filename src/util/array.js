@@ -311,6 +311,30 @@ module.exports = {
         var result = flattenArray.call( this, array );
 
         return this.isArray( result ) ? result : [];
+    },
+
+    /**
+     * Returns a shuffled copy of the list, using a version of the Fisher-Yates shuffle.
+     *
+     * @method  shuffle
+     * @param   target {Mixed}
+     * @return  {Array}
+     *
+     * refer: http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+     */
+    shuffle: function( target ) {
+        var lib = this;
+        var shuffled = [];
+        var index = 0;
+        var rand;
+
+        lib.each( target, function( value ) {
+            rand = lib.random( index++ );
+            shuffled[index - 1] = shuffled[rand];
+            shuffled[rand] = value;
+        });
+
+        return shuffled;
     }
 };
 
