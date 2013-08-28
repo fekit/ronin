@@ -140,3 +140,16 @@ function zerofill() {
         console.log( JR.zerofill( n, 6 ) );
     });
 }
+
+function sum() {
+    console.log( JR.sum([1,2,"3","4.45687651321", -11.45687651321, null]) );
+
+    console.log( JR.sum({
+            0: 1,
+            1: 2,
+            2: "3",
+            3: "4.45687651321",
+            4: -12.45687653321,
+            5: null
+        }) );
+}

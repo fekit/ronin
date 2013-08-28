@@ -335,6 +335,23 @@ module.exports = {
         });
 
         return shuffled;
+    },
+
+    /**
+     * Calculate the sum of values in an array.
+     *
+     * @method  sum
+     * @param   array {Array/Object/String}
+     * @return  {Number}
+     */
+    sum: function( array ) {
+        var result = 0;
+
+        this.each( array, function( value ) {
+            result += (value * 1);
+        });
+
+        return result;
     }
 };
 
