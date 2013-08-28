@@ -9,7 +9,7 @@ define(function( require, exports, module ) {
 
 var $ = require( "./core" );
 
-module.exports = $.mix( $,
+module.exports = $.mixin( $,
 		// 工具
 		require( "./util/object" ),
 		require( "./util/array" ),
