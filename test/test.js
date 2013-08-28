@@ -153,3 +153,37 @@ function sum() {
             5: null
         }) );
 }
+
+function min() {
+    var r_1 = JR.min(
+            [
+                { name : 'moe', age : 40 },
+                { name : 'larry', age : 50 },
+                { name : 'curly', age : 60 }
+            ],
+            function( d, i, l ) {
+                return d.age;
+            }
+        );
+
+    var r_2 = JR.min( [10, 5, 100, 2, 1000] );
+
+    console.log( r_1, r_2 );
+}
+
+function max() {
+    var r_1 = JR.max(
+            [
+                { name : 'moe', age : 40 },
+                { name : 'larry', age : 50 },
+                { name : 'curly', age : 60 }
+            ],
+            function( d, i, l ) {
+                return d.age;
+            }
+        );
+
+    var r_2 = JR.max( [10, 5, 100, 2, 1000] );
+
+    console.log( r_1, r_2 );
+}

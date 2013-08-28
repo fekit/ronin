@@ -338,21 +338,29 @@ module.exports = {
     },
 
     /**
-     * Calculate the sum of values in an array.
+     * Calculate the sum of values in a collection.
      *
      * @method  sum
-     * @param   array {Array/Object/String}
+     * @param   collection {Array/Object}
      * @return  {Number}
      */
-    sum: function( array ) {
-        var result = 0;
+    sum: function( collection ) {
+        var result = NaN;
 
-        this.each( array, function( value ) {
-            result += (value * 1);
-        });
+        if ( this.isArray( collection ) || this.isPlainObject( collection ) ) {
+            result = 0;
+
+            this.each( collection, function( value ) {
+                result += (value * 1);
+            });
+        }
 
         return result;
-    }
+    }/*,
+
+    max: function( target ) {},
+
+    min: function() {}*/
 };
 
 /**
