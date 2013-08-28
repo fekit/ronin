@@ -129,7 +129,7 @@ var L = {
         }
 
         lib.each( args, function( arg ) {
-            if ( lib.isString( arg ) && /^[a-z0-1_\-\.]+$/i.test( arg ) ) {
+            if ( lib.isString( arg ) && /^[a-z0-1_.]+[^_.]$/i.test( arg ) ) {
                 var obj = hostObj;
 
                 lib.each( arg.split("."), function( part, idx, parts ) {
