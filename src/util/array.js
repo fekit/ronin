@@ -347,7 +347,7 @@ module.exports = {
     sum: function( collection ) {
         var result = NaN;
 
-        if ( this.isArray( collection ) || this.isPlainObject( collection ) ) {
+        if ( isCollection.call( this, collection ) ) {
             result = 0;
 
             this.each( collection, function( value ) {
@@ -356,12 +356,94 @@ module.exports = {
         }
 
         return result;
-    }/*,
+    },
 
-    max: function( target ) {},
+    /**
+     * Return the maximum element or (element-based computation).
+     * Can't optimize arrays of integers longer than 65,535 elements.
+     * See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
+     *
+     * @method  max
+     * @param   target {Array/Object}
+     * @param   callback {Function}
+     * @param   [context] {Mixed}
+     * @return  {Number}
+     */
+    max: function( target, callback, context ) {
+        var result = { "value": -Infinity, "computed": -Infinity };
 
-    min: function() {}*/
+        if ( isCollection.call( this, target ) ) {
+            var existCallback = this.isFunction( callback );
+
+            if ( !existCallback && this.isArray( target ) ) {
+                return Math.max.apply( Math, target );
+            }
+
+            if ( arguments.length < 3 ) {
+                context = window;
+            }
+
+            this.each( target, function( val, idx, list ) {
+                var computed = existCallback ? callback.apply( context, [val, idx, list] ) : val;
+
+                if ( computed > result.computed ) {
+                    result = { "value": val, "computed": computed };
+                }
+            });
+        }
+
+        return result.value;
+    },
+
+    /**
+     * Return the minimum element (or element-based computation).
+     * Can't optimize arrays of integers longer than 65,535 elements.
+     * See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
+     *
+     * @method  min
+     * @param   target {Array/Object}
+     * @param   callback {Function}
+     * @param   [context] {Mixed}
+     * @return  {Number}
+     */
+    min: function( target, callback, context ) {
+        var result = { "value": Infinity, "computed": Infinity };
+
+        if ( isCollection.call( this, target ) ) {
+            var existCallback = this.isFunction( callback );
+
+            if ( !existCallback && this.isArray( target ) ) {
+                return Math.min.apply( Math, target );
+            }
+
+            if ( arguments.length < 3 ) {
+                context = window;
+            }
+
+            this.each( target, function( val, idx, list ) {
+                var computed = existCallback ? callback.apply( context, [val, idx, list] ) : val;
+
+                if ( computed < result.computed ) {
+                    result = { "value": val, "computed": computed };
+                }
+            });
+        }
+
+        return result.value;
+    }
 };
+
+/**
+ * Determine whether an object is an array or a plain object.
+ *
+ * @private
+ * @method  isCollection
+ * @param   target {Array/Object}
+ * @return  {Boolean}
+ */
+function isCollection( target ) {
+    return this.isArray( target ) || this.isPlainObject( target );
+}
 
 /**
  * A internal usage to flatten a nested array.
