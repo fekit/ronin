@@ -183,23 +183,26 @@ function max() {
 }
 
 function i18n() {
-    JR.i18n({
-        i18n_zh: "国际化",
-        i18n_ja: "国際化",
-        i18n_en: "Internationalization",
-        bio: "我的名字叫{% name %}，性别{%gender%}，今年 {% age%} 岁。",
-        bio_en: "My name is {%name %}, a {% gender %}, {%age%} age now.",
-        skill: {
-            dhtml: "JavaScript HTML CSS",
-            rate: 100
-        }
-    });
+    var data = {
+            i18n_zh: "国际化",
+            i18n_ja: "国際化",
+            i18n_en: "Internationalization",
+            bio: "我的名字叫{% name %}，性别{%gender%}，今年 {% age%} 岁。",
+            bio_en: "My name is {%name %}, a {% gender %}, {%age%} age now.",
+            skill: {
+                dhtml: "JavaScript HTML CSS",
+                rate: 100
+            }
+        };
 
-    console.log( JR.i18n( "i18n_zh" ) );
-    console.log( JR.i18n( "i18n_ja" ) );
-    console.log( JR.i18n( "i18n_en" ) );
-    console.log( JR.i18n( "bio", { name: "欧雷", gender: "男", age: Math.floor(Math.random() * 100) } ) );
-    console.log( JR.i18n( "bio_en", { name: "Ourai Lin", gender: "male", age: Math.floor(Math.random() * 100) } ) );
-    console.log( JR.i18n( "skill.dhtml" ) );
-    console.log( JR.i18n( "skill.rate" ) );
+    console.log( "i18n data: ", data );
+    JR.i18n( data );
+
+    console.log( "i18n_zh: ", JR.i18n( "i18n_zh" ) );
+    console.log( "i18n_ja: ", JR.i18n( "i18n_ja" ) );
+    console.log( "i18n_en: ", JR.i18n( "i18n_en" ) );
+    console.log( "bio: ", JR.i18n( "bio", { name: "欧雷", gender: "男", age: Math.floor(Math.random() * 100) } ) );
+    console.log( "bio_en: ", JR.i18n( "bio_en", { name: "Ourai Lin", gender: "male", age: Math.floor(Math.random() * 100) } ) );
+    console.log( "skill.dhtml: ", JR.i18n( "skill.dhtml" ) );
+    console.log( "skill.rate: ", JR.i18n( "skill.rate" ) );
 }
