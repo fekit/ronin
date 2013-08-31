@@ -1,9 +1,3 @@
-var timers = setInterval(function() {
-    if ( window.JR ) {
-        clearInterval( timers );
-    }
-}, 100);
-
 function filterElement() {
     // Object
     JR.filter(
@@ -139,4 +133,76 @@ function zerofill() {
         console.log( n + " is: " );
         console.log( JR.zerofill( n, 6 ) );
     });
+}
+
+function sum() {
+    console.log( JR.sum([1,2,"3","4.45687651321", -11.45687651321, null]) );
+
+    console.log( JR.sum({
+            0: 1,
+            1: 2,
+            2: "3",
+            3: "4.45687651321",
+            4: -12.45687653321,
+            5: null
+        }) );
+}
+
+function min() {
+    var r_1 = JR.min(
+            [
+                { name : 'moe', age : 40 },
+                { name : 'larry', age : 50 },
+                { name : 'curly', age : 60 }
+            ],
+            function( d, i, l ) {
+                return d.age;
+            }
+        );
+
+    var r_2 = JR.min( [10, 5, 100, 2, 1000] );
+
+    console.log( r_1, r_2 );
+}
+
+function max() {
+    var r_1 = JR.max(
+            [
+                { name : 'moe', age : 40 },
+                { name : 'larry', age : 50 },
+                { name : 'curly', age : 60 }
+            ],
+            function( d, i, l ) {
+                return d.age;
+            }
+        );
+
+    var r_2 = JR.max( [10, 5, 100, 2, 1000] );
+
+    console.log( r_1, r_2 );
+}
+
+function i18n() {
+    var data = {
+            i18n_zh: "国际化",
+            i18n_ja: "国際化",
+            i18n_en: "Internationalization",
+            bio: "我的名字叫{% name %}，性别{%gender%}，今年 {% age%} 岁。",
+            bio_en: "My name is {%name %}, a {% gender %}, {%age%} age now.",
+            skill: {
+                dhtml: "JavaScript HTML CSS",
+                rate: 100
+            }
+        };
+
+    console.log( "i18n data: ", data );
+    JR.i18n( data );
+
+    console.log( "i18n_zh: ", JR.i18n( "i18n_zh" ) );
+    console.log( "i18n_ja: ", JR.i18n( "i18n_ja" ) );
+    console.log( "i18n_en: ", JR.i18n( "i18n_en" ) );
+    console.log( "bio: ", JR.i18n( "bio", { name: "欧雷", gender: "男", age: Math.floor(Math.random() * 100) } ) );
+    console.log( "bio_en: ", JR.i18n( "bio_en", { name: "Ourai Lin", gender: "male", age: Math.floor(Math.random() * 100) } ) );
+    console.log( "skill.dhtml: ", JR.i18n( "skill.dhtml" ) );
+    console.log( "skill.rate: ", JR.i18n( "skill.rate" ) );
 }

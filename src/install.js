@@ -162,7 +162,7 @@ function initialize() {
         // 回调函数
         function( jsrev ) {
             // 将 URI 解析器附着在核心对象上
-            // jsrev.mix( parser );
+            // jsrev.mixin( parser );
             // 将对象暴露到全局变量中
             window[GLOBAL_NAME] = jsrev;
         }

@@ -311,8 +311,128 @@ module.exports = {
         var result = flattenArray.call( this, array );
 
         return this.isArray( result ) ? result : [];
+    },
+
+    /**
+     * Returns a shuffled copy of the list, using a version of the Fisher-Yates shuffle.
+     *
+     * @method  shuffle
+     * @param   target {Mixed}
+     * @return  {Array}
+     *
+     * refer: http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+     */
+    shuffle: function( target ) {
+        var lib = this;
+        var shuffled = [];
+        var index = 0;
+        var rand;
+
+        lib.each( target, function( value ) {
+            rand = lib.random( index++ );
+            shuffled[index - 1] = shuffled[rand];
+            shuffled[rand] = value;
+        });
+
+        return shuffled;
+    },
+
+    /**
+     * Calculate the sum of values in a collection.
+     *
+     * @method  sum
+     * @param   collection {Array/Object}
+     * @return  {Number}
+     */
+    sum: function( collection ) {
+        var result = NaN;
+
+        if ( isCollection.call( this, collection ) ) {
+            result = 0;
+
+            this.each( collection, function( value ) {
+                result += (value * 1);
+            });
+        }
+
+        return result;
+    },
+
+    /**
+     * Return the maximum element or (element-based computation).
+     *
+     * @method  max
+     * @param   target {Array/Object}
+     * @param   callback {Function}
+     * @param   [context] {Mixed}
+     * @return  {Number}
+     */
+    max: function( target, callback, context ) {
+        return getMaxMin.apply(this, [-Infinity, "max", target, callback, (arguments.length < 3 ? window : context)]);
+    },
+
+    /**
+     * Return the minimum element (or element-based computation).
+     *
+     * @method  min
+     * @param   target {Array/Object}
+     * @param   callback {Function}
+     * @param   [context] {Mixed}
+     * @return  {Number}
+     */
+    min: function( target, callback, context ) {
+        return getMaxMin.apply(this, [Infinity, "min", target, callback, (arguments.length < 3 ? window : context)]);
     }
 };
+
+/**
+ * Determine whether an object is an array or a plain object.
+ *
+ * @private
+ * @method  isCollection
+ * @param   target {Array/Object}
+ * @return  {Boolean}
+ */
+function isCollection( target ) {
+    return this.isArray( target ) || this.isPlainObject( target );
+}
+
+/**
+ * Return the maximum (or the minimum) element (or element-based computation).
+ * Can't optimize arrays of integers longer than 65,535 elements.
+ * See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
+ *
+ * @private
+ * @method  getMaxMin
+ * @param   initialValue {Number}       Default return value of function
+ * @param   funcName {String}           Method's name of Math object
+ * @param   collection {Array/Object}   A collection to be manipulated
+ * @param   callback {Function}         Callback for every element of the collection
+ * @param   [context] {Mixed}           Context of the callback
+ * @return  {Number}
+ */
+function getMaxMin( initialValue, funcName, collection, callback, context ) {
+    var result = { "value": initialValue, "computed": initialValue };
+
+    if ( isCollection.call( this, collection ) ) {
+        var existCallback = this.isFunction( callback );
+
+        if ( !existCallback && this.isArray( collection ) && collection[0] === +collection[0] && collection.length < 65535 ) {
+            return Math[funcName].apply( Math, collection );
+        }
+
+        this.each( collection, function( val, idx, list ) {
+            var computed = existCallback ? callback.apply( context, [val, idx, list] ) : val;
+
+            if ( funcName === "max" && computed > result.computed ||
+                    funcName === "min" && computed < result.computed ) {
+                result = { "value": val, "computed": computed };
+            }
+        });
+    }
+
+    return result.value;
+}
 
 /**
  * A internal usage to flatten a nested array.

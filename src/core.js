@@ -25,11 +25,11 @@ var L = {
     /**
      * 扩展指定对象
      * 
-     * @method  mix
+     * @method  mixin
      * @param   unspecified {Mixed}
      * @return  {Object}
      */
-    mix: function() {
+    mixin: function() {
         var args = arguments;
         var target = args[0] || {};
         var i = 1;
@@ -79,7 +79,7 @@ var L = {
 
         if ( type in { "object": true, "function": true } ) {
             for ( name in object ) {
-                if ( callback.apply( object[name], [ object[name], name ] ) === false ) {
+                if ( callback.apply( object[name], [ object[name], name, object ] ) === false ) {
                     break;
                 }
             }
@@ -95,13 +95,56 @@ var L = {
                     ele = object.charAt(index);
                 }
 
-                if ( callback.apply( object[index], [ ele, index++ ] ) === false ) {
+                if ( callback.apply( object[index], [ ele, index++, object ] ) === false ) {
                     break;
                 }
             }
         }
 
         return object;
+    },
+
+    /**
+     * Returns the namespace specified and creates it if it doesn't exist.
+     * Be careful when naming packages.
+     * Reserved words may work in some browsers and not others.
+     *
+     * @method  namespace
+     * @param   [hostObj] {Object}      Host object namespace will be added to
+     * @param   [ns_str_1] {String}     The first namespace string
+     * @param   [ns_str_2] {String}     The second namespace string
+     * @param   [ns_str_*] {String}     Numerous namespace string
+     * @param   [global] {Boolean}      Whether set window as the host object
+     * @return  {Object}                A reference to the last namespace object created
+     */
+    namespace: function() {
+        var args = arguments;
+        var lib = this;
+        var ns = {};
+        var hostObj = args[0];
+        
+        // Determine the host object.
+        if ( !lib.isPlainObject( hostObj ) ) {
+            hostObj = args[args.length - 1] === true ? window : this;
+        }
+
+        lib.each( args, function( arg ) {
+            if ( lib.isString( arg ) && /^[0-9A-Z_.]+[^_.]$/i.test( arg ) ) {
+                var obj = hostObj;
+
+                lib.each( arg.split("."), function( part, idx, parts ) {
+                    if ( obj[ part ] === undefined ) {
+                        obj[ part ] = idx === parts.length - 1 ? null : {};
+                    }
+
+                    obj = obj[ part ];
+                });
+
+                ns = obj;
+            }
+        });
+
+        return ns;
     },
 
     /**
@@ -292,6 +335,24 @@ var L = {
         }
 
         return result;
+    },
+
+    /**
+     * Returns a random integer between min and max, inclusive.
+     * If you only pass one argument, it will return a number between 0 and that number.
+     *
+     * @method  random
+     * @param   min {Number}
+     * @param   max {Number}
+     * @return  {Number}
+     */
+    random: function( min, max ) {
+        if ( max == null ) {
+            max = min;
+            min = 0;
+        }
+
+        return min + Math.floor( Math.random() * ( max - min + 1 ) );
     }
     /**
      * 别名
