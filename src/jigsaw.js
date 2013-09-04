@@ -11,9 +11,9 @@ var $ = require( "./core/main" );
 
 module.exports = $.mixin( $,
 		// 工具
-		require( "./util/object" ),
-		require( "./util/array" ),
-		require( "./util/string" ),
+		require( "./core/object" ),
+		require( "./core/array" ),
+		require( "./core/string" ),
 		require( "./util/i18n" )
 	);
 
