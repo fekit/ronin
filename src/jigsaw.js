@@ -7,7 +7,7 @@
  */
 define(function( require, exports, module ) {
 
-var $ = require( "./core" );
+var $ = require( "./core/main" );
 
 module.exports = $.mixin( $,
 		// 工具
