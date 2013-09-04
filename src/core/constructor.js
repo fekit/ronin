@@ -36,12 +36,27 @@ function L( host, data ) {
     }
 }
 
+// Override global setting
+L.config = function( setting ) {
+    var key;
+
+    for ( key in setting ) {
+        settings[key] = setting[key];
+    }
+};
+
 L.prototype = {
     add: function( set ) {
         return attach(set);
     },
 
-    remove: function( funcName ) {}
+    remove: function( funcName ) {
+        var func = storage.host[funcName];
+
+        if ( isFunc(func) ) {
+            delete func;
+        }
+    }
 };
 
 function attach( set ) {
