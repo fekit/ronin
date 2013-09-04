@@ -67,6 +67,7 @@ function attach( set ) {
         var validator = set.validator;
         var handler = set.handler;
         var value = set.value;
+        var pkg = set.package;
 
         if ( !isFunc(validator) ) {
             validator = settings.validator;
@@ -79,6 +80,10 @@ function attach( set ) {
         host[name] = function() {
             return validator.apply(window, arguments) === true && isFunc(handler) ? handler.apply(window, arguments) : value;
         };
+
+        if ( typeof pkg === "string" ) {
+            host[name].package = pkg;
+        }
     }
 }
 
