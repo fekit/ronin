@@ -25,14 +25,22 @@ var settings = {
     };
 var storage = {};
 
-function L( host, data ) {
-    var idx = 0;
-    var funcSet = data.functions;
-
+function L( host, data, context ) {
     storage.host = host;
 
-    for ( ; idx < funcSet.length; idx++ ) {
-        attach(funcSet[idx]);
+    if ( arguments.length < 3 ) {
+        context = host;
+    }
+
+    if ( data instanceof Array ) {
+        var idx = 0;
+
+        for ( ; idx < data.length; idx++ ) {
+            batch( data[idx].functions, data[idx].package, context );
+        }
+    }
+    else {
+        batch( data.functions, data.package, context );
     }
 }
 
@@ -48,18 +56,18 @@ L.config = function( setting ) {
 L.prototype = {
     add: function( set ) {
         return attach(set);
-    },
-
-    remove: function( funcName ) {
-        var func = storage.host[funcName];
-
-        if ( isFunc(func) ) {
-            delete func;
-        }
     }
 };
 
-function attach( set ) {
+function batch( set, pkg, context ) {
+    var idx = 0;
+
+    for ( ; idx < set.length; idx++ ) {
+        attach(set[idx], pkg, context);
+    }
+}
+
+function attach( set, pkg, context ) {
     var host = storage.host;
     var name = set.name;
 
@@ -67,7 +75,6 @@ function attach( set ) {
         var validator = set.validator;
         var handler = set.handler;
         var value = set.value;
-        var pkg = set.package;
 
         if ( !isFunc(validator) ) {
             validator = settings.validator;
@@ -78,7 +85,7 @@ function attach( set ) {
         }
 
         host[name] = function() {
-            return validator.apply(window, arguments) === true && isFunc(handler) ? handler.apply(window, arguments) : value;
+            return validator.apply(context, arguments) === true && isFunc(handler) ? handler.apply(context, arguments) : value;
         };
 
         if ( typeof pkg === "string" ) {
