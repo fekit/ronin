@@ -8,13 +8,13 @@
 define(function( require, exports, module ) {
 
 var $ = require( "./core/main" );
-
-module.exports = $.mixin( $,
-		// 工具
-		require( "./core/object" ),
-		require( "./core/array" ),
-		require( "./core/string" ),
-		require( "./util/i18n" )
+var Constructor = require( "./core/constructor" );
+var C = new Constructor( $,
+		[
+			require( "./core/object" )
+		]
 	);
+
+module.exports = $;
 
 });
