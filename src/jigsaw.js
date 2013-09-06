@@ -11,7 +11,9 @@ var $ = require( "./core/main" );
 var Constructor = require( "./core/constructor" );
 var C = new Constructor( $,
 		[
-			require( "./core/object" )
+			require( "./core/object" ),
+			require( "./core/array" ),
+			require( "./core/string" )
 		]
 	);
 

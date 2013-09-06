@@ -11,7 +11,7 @@ define(function( require, exports, module ) {
 
 module.exports = {
     package: "Object",
-    functions: [
+    handlers: [
         /**
          * Get a set of keys/indexes.
          * It will return a key or an index when pass the 'value' parameter.

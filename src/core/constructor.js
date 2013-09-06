@@ -11,7 +11,7 @@ define(function( require, exports, module ) {
 
 // {
 //     package: "String",
-//     functions: [
+//     handlers: [
 //         {
 //             name: "example"
 //             value: null,
@@ -36,11 +36,11 @@ function L( host, data, context ) {
         var idx = 0;
 
         for ( ; idx < data.length; idx++ ) {
-            batch( data[idx].functions, data[idx].package, context );
+            batch( data[idx].handlers, data[idx].package, context );
         }
     }
     else {
-        batch( data.functions, data.package, context );
+        batch( data.handlers, data.package, context );
     }
 }
 
