@@ -8,15 +8,12 @@
 define(function( require, exports, module ) {
 
 var $ = require( "./core/main" );
-var Constructor = require( "./core/constructor" );
-var C = new Constructor( $,
-		[
-			require( "./core/object" ),
-			require( "./core/array" ),
-			require( "./core/string" )
-		]
-	);
+var utils = [
+		require( "./core/object" ),
+		require( "./core/array" ),
+		require( "./core/string" )
+	];
 
-module.exports = $;
+module.exports = $.absorb( utils );
 
 });

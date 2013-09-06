@@ -20,6 +20,89 @@ var _alias;                     // 记录别名的名字，只能设置一个别
 var toString = Object.prototype.toString;
 var hasOwn = Object.prototype.hasOwnProperty;
 
+// Method constructor
+var Constructor = (function() {
+        var settings = {
+                validator: function() {}
+            };
+        var storage = {};
+
+        function C( host, data, context ) {
+            storage.host = host;
+
+            if ( arguments.length < 3 ) {
+                context = host;
+            }
+
+            if ( data instanceof Array ) {
+                var idx = 0;
+
+                for ( ; idx < data.length; idx++ ) {
+                    batch( data[idx].handlers, data[idx].package, context );
+                }
+            }
+            else {
+                batch( data.handlers, data.package, context );
+            }
+        }
+
+        // Override global setting
+        C.config = function( setting ) {
+            var key;
+
+            for ( key in setting ) {
+                settings[key] = setting[key];
+            }
+        };
+
+        C.prototype = {
+            add: function( set ) {
+                return attach(set);
+            }
+        };
+
+        function batch( set, pkg, context ) {
+            var idx = 0;
+
+            for ( ; idx < set.length; idx++ ) {
+                attach(set[idx], pkg, context);
+            }
+        }
+
+        function attach( set, pkg, context ) {
+            var host = storage.host;
+            var name = set.name;
+
+            if ( !isFunc(host[name]) ) {
+                var validator = set.validator;
+                var handler = set.handler;
+                var value = set.value;
+
+                if ( !isFunc(validator) ) {
+                    validator = settings.validator;
+                }
+
+                if ( !isFunc(validator) ) {
+                    validator = function() {};
+                }
+
+                host[name] = function() {
+                    return validator.apply(context, arguments) === true && isFunc(handler) ? handler.apply(context, arguments) : value;
+                };
+
+                if ( typeof pkg === "string" ) {
+                    host[name].package = pkg;
+                }
+            }
+        }
+
+        function isFunc( obj ) {
+            return typeof obj === "function";
+        }
+
+        return C;
+    })();
+
 // a shortname for Library
 var L = {
     /**
@@ -62,6 +145,21 @@ var L = {
         }
 
         return target;
+    },
+
+    /**
+     * 将其他组件组装到核心对象上
+     * 
+     * @method  absorb
+     * @param   object {Object}
+     * @return
+     */
+    absorb: function( object ) {
+        if ( this.isArray(object) ) {
+            var inst = new Constructor(this, object);
+        }
+
+        return this;
     },
 
     /**
@@ -382,37 +480,6 @@ var L = {
      * @return
      */
     // "revert": function() {},
-
-    /**
-     * 将其他组件组装到核心对象上
-     * 
-     * @method  connect
-     * @param   namespace {String}
-     * @param   object {Object}
-     * @return
-     */
-    /*connect: function( namespace, object ) {
-        var host;
-        var getType = this.type;
-
-        if ( getType( namespace ) === "object" ) {
-            object = namespace;
-            host = this;
-        }
-        else if ( getType( namespace ) === "string" ) {
-            if ( this[namespace] === undefined ) {
-                this[namespace] = {};
-            }
-
-            host = this[namespace];
-
-            if ( this.isFunction( object ) ) {
-                _pool.modules[ namespace ] = object
-            }
-        }
-
-        this.extend( host, object );
-    },*/
 
     /**
      * 新建对象子集
