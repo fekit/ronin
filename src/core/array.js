@@ -25,28 +25,29 @@ module.exports = {
             name: "inArray",
             handler: function( element, array, from ) {
                 var index = -1;
+                var indexOf = Array.prototype.indexOf;
+                var length = array.length;
 
-                if ( this.isArray( array ) ) {
-                    var indexOf = Array.prototype.indexOf;
-                    var length = array.length;
+                from = from ? from < 0 ? Math.max( 0, length + from ) : from : 0;
 
-                    from = from ? from < 0 ? Math.max( 0, length + from ) : from : 0;
-
-                    if ( indexOf ) {
-                        index = indexOf.apply( array, [element, from] );
-                    }
-                    else {
-                        for ( ; from < length; from++ ) {
-                            if ( from in array && array[from] === element ) {
-                                index = from;
-                                break;
-                            }
+                if ( indexOf ) {
+                    index = indexOf.apply( array, [element, from] );
+                }
+                else {
+                    for ( ; from < length; from++ ) {
+                        if ( from in array && array[from] === element ) {
+                            index = from;
+                            break;
                         }
                     }
                 }
 
                 return index;
-            }
+            },
+            validator: function( element, array ) {
+                return array instanceof Array;
+            },
+            value: -1
         },
 
         /**

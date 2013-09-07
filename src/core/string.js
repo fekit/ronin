@@ -51,7 +51,11 @@ module.exports = {
                 }
 
                 return string;
-            }
+            },
+            validator: function( string ) {
+                return typeof string in { "string": true, "number": true };
+            },
+            value: ""
         },
 
         /**
@@ -64,11 +68,14 @@ module.exports = {
         {
             name: "capitalize",
             handler: function( string ) {
-                return this.isString(string) ?
-                    string.replace(/[a-z]+/ig, function( c ) {
+                return string.replace(/[a-z]+/ig, function( c ) {
                         return c.charAt(0).toUpperCase() + c.slice(1).toLowerCase();
-                    }) : "";
-            }
+                    });
+            },
+            validator: function( string ) {
+                return isStr(string);
+            },
+            value: ""
         },
 
         /**
@@ -82,18 +89,20 @@ module.exports = {
         {
             name: "camelCase",
             handler: function( string, is_upper ) {
-                if ( this.isString(string) ) {
-                    string = string.toLowerCase().replace(/[-_\x20]([a-z]|[0-9])/ig, function( all, letter ) {
-                        return letter.toUpperCase();
-                    });
+                string = string.toLowerCase().replace(/[-_\x20]([a-z]|[0-9])/ig, function( all, letter ) {
+                    return letter.toUpperCase();
+                });
 
-                    var firstLetter = string.charAt(0);
+                var firstLetter = string.charAt(0);
 
-                    string = (is_upper === true ? firstLetter.toUpperCase() : firstLetter.toLowerCase()) + string.slice(1);
-                }
+                string = (is_upper === true ? firstLetter.toUpperCase() : firstLetter.toLowerCase()) + string.slice(1);
 
                 return string;
-            }
+            },
+            validator: function( string ) {
+                return isStr(string);
+            },
+            value: ""
         },
 
         /**
@@ -109,58 +118,63 @@ module.exports = {
             handler: function( number, digit ) {
                 var result = "";
                 var lib = this;
+                var rfloat = /^([-+]?\d+)\.(\d+)$/;
+                var isFloat = rfloat.test( number );
+                var prefix = "";
 
-                if ( lib.isNumeric( number ) && lib.isInteger( digit ) ) {
-                    var rfloat = /^([-+]?\d+)\.(\d+)$/;
-                    var isFloat = rfloat.test( number );
-                    var prefix = "";
+                digit = parseInt( digit );
 
-                    digit = parseInt( digit );
+                // 浮点型数字时 digit 则为小数点后的位数
+                if ( digit > 0 && isFloat ) {
+                    number = (number + "").match( rfloat );
+                    prefix = number[1] * 1 + ".";
+                    number = number[2];
+                }
+                // Negative number
+                else if ( number * 1 < 0 ) {
+                    prefix = "-";
+                    number = (number + "").substring( 1 );
+                }
 
-                    // 浮点型数字时 digit 则为小数点后的位数
-                    if ( digit > 0 && isFloat ) {
-                        number = (number + "").match( rfloat );
-                        prefix = number[1] * 1 + ".";
-                        number = number[2];
-                    }
-                    // Negative number
-                    else if ( number * 1 < 0 ) {
-                        prefix = "-";
-                        number = (number + "").substring( 1 );
-                    }
+                result = lib.pad( number, digit, "0" );
 
-                    result = lib.pad( number, digit, "0" );
-
-                    if ( digit < 0 && isFloat ) {
-                        result = "";
-                    }
-                    else {
-                        result = prefix + result;
-                    }
+                if ( digit < 0 && isFloat ) {
+                    result = "";
+                }
+                else {
+                    result = prefix + result;
                 }
 
                 return result;
-            }
+            },
+            validator: function( number, digit ) {
+                return isNumeric(number) && isNumeric(digit) && /^-?[1-9]\d*$/.test(digit);
+            },
+            value: ""
         },
 
         /**
          * Removes whitespace from both ends of the string.
          *
          * @method  trim
-         * @param   object {Mixed}
+         * @param   string {String}
          * @return  {String}
          * 
          * refer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim
          */
         {
             name: "trim",
-            handler: function( object ) {
+            handler: function( string ) {
                 // Make sure we trim BOM and NBSP (here's looking at you, Safari 5.0 and IE)
                 var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
                 var func = "".trim;
 
-                return object == null ? "" : func && !func.call( "\uFEFF\xA0" ) ? func.call( object ) : ( object + "" ).replace( rtrim, "" );
-            }
+                return func && !func.call( "\uFEFF\xA0" ) ? func.call( string ) : string.replace( rtrim, "" );
+            },
+            validator: function( string ) {
+                return isStr(string);
+            },
+            value: ""
         },
 
         /**
@@ -186,47 +200,49 @@ module.exports = {
                 var result = null;
                 var lib = this;
 
-                if ( lib.isString( string ) ) {
-                    if ( !lib.isInteger( mode ) || mode < 0 ) {
-                        mode = 0;
+                if ( !lib.isInteger( mode ) || mode < 0 ) {
+                    mode = 0;
+                }
+
+                var bytes = {};
+                var chars = [];
+
+                lib.each( string, function( chr, idx ) {
+                    var code = chr.charCodeAt(0);
+
+                    if ( lib.isNumber( bytes[code] ) ) {
+                        bytes[code]++;
                     }
+                    else {
+                        bytes[code] = 1;
 
-                    var bytes = {};
-                    var chars = [];
-
-                    lib.each( string, function( chr, idx ) {
-                        var code = chr.charCodeAt(0);
-
-                        if ( lib.isNumber( bytes[code] ) ) {
-                            bytes[code]++;
+                        if ( lib.inArray( chr, chars ) < 0 ) {
+                            chars.push( chr );
                         }
-                        else {
-                            bytes[code] = 1;
-
-                            if ( lib.inArray( chars ) < 0 ) {
-                                chars.push( chr );
-                            }
-                        }
-                    });
-
-                    switch( mode ) {
-                        case 0:
-                            break;
-                        case 1:
-                            result = bytes;
-                            break;
-                        case 2:
-                            break;
-                        case 3:
-                            result = chars.join("");
-                            break;
-                        case 4:
-                            break;
                     }
+                });
+
+                switch( mode ) {
+                    case 0:
+                        break;
+                    case 1:
+                        result = bytes;
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        result = chars.join("");
+                        break;
+                    case 4:
+                        break;
                 }
 
                 return result;
-            }
+            },
+            validator: function( string ) {
+                return isStr( string );
+            },
+            value: null
         }
 
         /**
@@ -285,6 +301,30 @@ module.exports = {
         // }
     ]
 };
+
+/**
+ * Determine whether the object is a string.
+ *
+ * @private
+ * @method  isStr
+ * @param   object {Mixed}
+ * @return  {Boolean}
+ */
+function isStr( object ) {
+    return typeof object === "string";
+}
+
+/**
+ * Determine whether the object is a number or a numeric string.
+ *
+ * @private
+ * @method  isNumeric
+ * @param   object {Mixed}
+ * @return  {Boolean}
+ */
+function isNumeric( object ) {
+    return !isNaN( parseFloat(object) ) && isFinite( object );
+}
 
 /**
  * 将字符串转换为以 \u 开头的十六进制 Unicode

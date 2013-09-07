@@ -17,9 +17,9 @@ module.exports = {
          * It will return a key or an index when pass the 'value' parameter.
          *
          * @method  keys
-         * @param   object {Mixed}      被操作的目标
-         * @param   value {Mixed}       指定值
-         * @return  {Mixed}
+         * @param   object {Object/Function}    被操作的目标
+         * @param   value {Mixed}               指定值
+         * @return  {Array/String}
          *
          * refer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
          */
@@ -41,10 +41,10 @@ module.exports = {
 
                 return this.isArray( keys ) ? keys.sort() : keys;
             },
-            value: [],
             validator: function( object ) {
                 return object !== null && !(object instanceof Array) && typeof object in { "object": true, "function": true };
-            }
+            },
+            value: []
         }
     ]
 };
