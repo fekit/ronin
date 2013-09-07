@@ -38,11 +38,11 @@ var Constructor = (function() {
                 var idx = 0;
 
                 for ( ; idx < data.length; idx++ ) {
-                    batch( data[idx].handlers, data[idx].package, context );
+                    batch( data[idx].handlers, data[idx], context );
                 }
             }
             else {
-                batch( data.handlers, data.package, context );
+                batch( data.handlers, data, context );
             }
         }
 
@@ -61,29 +61,30 @@ var Constructor = (function() {
             }
         };
 
-        function batch( set, pkg, context ) {
+        function batch( set, data, context ) {
             var idx = 0;
 
             for ( ; idx < set.length; idx++ ) {
-                attach(set[idx], pkg, context);
+                attach(set[idx], data, context);
             }
         }
 
-        function attach( set, pkg, context ) {
+        function attach( set, data, context ) {
             var host = storage.host;
             var name = set.name;
 
             if ( !isFunc(host[name]) ) {
-                var validator = set.validator;
                 var handler = set.handler;
-                var value = set.value;
+                var value = set.value === undefined ? data.value : set.value;
+                var validators = [set.validator, data.validator, settings.validator, function() {}];
+                var validator;
+                
+                for ( var idx = 0; idx < validators.length; idx++ ) {
+                    validator = validators[idx];
 
-                if ( !isFunc(validator) ) {
-                    validator = settings.validator;
-                }
-
-                if ( !isFunc(validator) ) {
-                    validator = function() {};
+                    if ( isFunc(validator) ) {
+                        break;
+                    }
                 }
 
                 host[name] = function() {
