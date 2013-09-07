@@ -11,6 +11,10 @@ define(function( require, exports, module ) {
 
 module.exports = {
     package: "Array",
+    value: [],
+    validator: function( object ) {
+        return isArr( object );
+    },
     handlers: [
         /**
          * 元素在数组中的位置
@@ -45,7 +49,7 @@ module.exports = {
                 return index;
             },
             validator: function( element, array ) {
-                return array instanceof Array;
+                return isArr( array );
             },
             value: -1
         },
@@ -83,7 +87,11 @@ module.exports = {
                                 }
                             ]
                         );
-            }
+            },
+            validator: function( target ) {
+                return isArr( target ) || typeof target in { "object": true, "string": true };
+            },
+            value: null
         },
 
         /**
@@ -112,7 +120,11 @@ module.exports = {
                                 }
                             ]
                         );
-            }
+            },
+            validator: function( target ) {
+                return isArr( target ) || typeof target in { "object": true, "string": true };
+            },
+            value: null
         },
 
         /**
@@ -137,7 +149,8 @@ module.exports = {
                 });
 
                 return count === 0 ? 0 : result;
-            }
+            },
+            value: null
         },
 
         /**
@@ -157,25 +170,24 @@ module.exports = {
 
                 last = !!last;
 
-                if ( lib.isArray( array ) ) {
-                    lib.each( (last ? array.reverse() : array), function( n, i ) {
-                        if ( lib.isNumeric( n ) ) {
-                            n = parseFloat( n );
-                        }
-
-                        if ( lib.inArray( n, result ) === -1 ) {
-                            result.push( n );
-                        }
-                    });
-
-                    if ( last ) {
-                        array.reverse();
-                        result.reverse();
+                lib.each( (last ? array.reverse() : array), function( n, i ) {
+                    if ( lib.isNumeric( n ) ) {
+                        n = parseFloat( n );
                     }
+
+                    if ( lib.inArray( n, result ) === -1 ) {
+                        result.push( n );
+                    }
+                });
+
+                if ( last ) {
+                    array.reverse();
+                    result.reverse();
                 }
 
                 return result;
-            }
+            },
+            value: null
         },
 
         /**
@@ -255,6 +267,9 @@ module.exports = {
                 }
 
                 return result;
+            },
+            validator: function() {
+                return true;
             }
         },
 
@@ -321,7 +336,8 @@ module.exports = {
                 }
 
                 return result;
-            }
+            },
+            value: null
         },
 
         /**
@@ -334,9 +350,7 @@ module.exports = {
         {
             name: "flatten",
             handler: function( array ) {
-                var result = flattenArray.call( this, array );
-
-                return this.isArray( result ) ? result : [];
+                return flattenArray.call( this, array );
             }
         },
 
@@ -364,7 +378,8 @@ module.exports = {
                 });
 
                 return shuffled;
-            }
+            },
+            value: null
         },
 
         /**
@@ -388,7 +403,11 @@ module.exports = {
                 }
 
                 return result;
-            }
+            },
+            validator: function() {
+                return true;
+            },
+            value: NaN
         },
 
         /**
@@ -404,6 +423,9 @@ module.exports = {
             name: "max",
             handler: function( target, callback, context ) {
                 return getMaxMin.apply(this, [-Infinity, "max", target, callback, (arguments.length < 3 ? window : context)]);
+            },
+            validator: function() {
+                return true;
             }
         },
 
@@ -420,10 +442,25 @@ module.exports = {
             name: "min",
             handler: function( target, callback, context ) {
                 return getMaxMin.apply(this, [Infinity, "min", target, callback, (arguments.length < 3 ? window : context)]);
+            },
+            validator: function() {
+                return true;
             }
         }
     ]
 };
+
+/**
+ * Determine whether an object is an array.
+ *
+ * @private
+ * @method  isCollection
+ * @param   target {Array/Object}
+ * @return  {Boolean}
+ */
+function isArr( object ) {
+    return object instanceof Array;
+}
 
 /**
  * Determine whether an object is an array or a plain object.
