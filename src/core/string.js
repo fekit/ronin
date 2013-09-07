@@ -11,6 +11,10 @@ define(function( require, exports, module ) {
 
 module.exports = {
     package: "String",
+    value: "",
+    validator: function( object ) {
+        return isStr( object );
+    },
     handlers: [
         /**
          * 用指定占位符填补字符串
@@ -54,8 +58,7 @@ module.exports = {
             },
             validator: function( string ) {
                 return typeof string in { "string": true, "number": true };
-            },
-            value: ""
+            }
         },
 
         /**
@@ -71,11 +74,7 @@ module.exports = {
                 return string.replace(/[a-z]+/ig, function( c ) {
                         return c.charAt(0).toUpperCase() + c.slice(1).toLowerCase();
                     });
-            },
-            validator: function( string ) {
-                return isStr(string);
-            },
-            value: ""
+            }
         },
 
         /**
@@ -98,11 +97,7 @@ module.exports = {
                 string = (is_upper === true ? firstLetter.toUpperCase() : firstLetter.toLowerCase()) + string.slice(1);
 
                 return string;
-            },
-            validator: function( string ) {
-                return isStr(string);
-            },
-            value: ""
+            }
         },
 
         /**
@@ -149,8 +144,7 @@ module.exports = {
             },
             validator: function( number, digit ) {
                 return isNumeric(number) && isNumeric(digit) && /^-?[1-9]\d*$/.test(digit);
-            },
-            value: ""
+            }
         },
 
         /**
@@ -170,11 +164,7 @@ module.exports = {
                 var func = "".trim;
 
                 return func && !func.call( "\uFEFF\xA0" ) ? func.call( string ) : string.replace( rtrim, "" );
-            },
-            validator: function( string ) {
-                return isStr(string);
-            },
-            value: ""
+            }
         },
 
         /**
@@ -238,9 +228,6 @@ module.exports = {
                 }
 
                 return result;
-            },
-            validator: function( string ) {
-                return isStr( string );
             },
             value: null
         }
