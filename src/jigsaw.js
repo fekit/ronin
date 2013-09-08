@@ -7,13 +7,18 @@
  */
 define(function( require, exports, module ) {
 
-var $ = require( "./core/main" );
-var utils = [
-		require( "./core/object" ),
-		require( "./core/array" ),
-		require( "./core/string" )
-	];
+var C = require("./core/constructor");
 
-module.exports = $.absorb( utils );
+var $ = require( "./core/main" );
+// var utils = [
+// 		require( "./core/object" ),
+// 		require( "./core/array" ),
+// 		require( "./core/string" )
+// 	];
+
+	new C(C, $);
+console.dir( C );
+
+// module.exports = $.absorb( utils );
 
 });
