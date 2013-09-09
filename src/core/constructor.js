@@ -45,6 +45,13 @@ function C( host, data, context ) {
     }
 }
 
+/**
+ * 扩展指定对象
+ * 
+ * @method  mixin
+ * @param   unspecified {Mixed}
+ * @return  {Object}
+ */
 C.mixin = function() {
     var args = arguments;
     var target = args[0] || {};
@@ -81,6 +88,14 @@ C.mixin = function() {
 };
 
 C.mixin({
+    /**
+     * 遍历
+     * 
+     * @method  each
+     * @param   object {Object/Array/Function}
+     * @param   callback {Function}
+     * @return  {Mixed}
+     */
     each: function ( object, callback ) {
         var type = this.type( object );
         var index = 0;
@@ -113,6 +128,13 @@ C.mixin({
         return object;
     },
 
+    /**
+     * 获取对象类型
+     * 
+     * @method  type
+     * @param   object {Mixed}
+     * @return  {String}
+     */
     type: function( object ) {
         return object == null ? String(object) : storage.types[ toString.call(object) ] || "object";
     }
@@ -148,30 +170,35 @@ C.prototype = {
     }
 };
 
-function batch( set, data, context ) {
-    C.each( set, function( info ) {
-        attach(info, data, context);
-    });
-}
-
-function attach( set, data, context ) {
-    var host = data.module;
-    var name = set.name;
+function namespace( ns_str ) {
+    var obj;
 
     // Generate an object when the host variable is a namespace string.
-    if ( C.isString( host ) && /^[0-9A-Z_.]+[^_.]$/i.test( host ) ) {
-        var obj = storage.modules;
+    if ( C.isString( ns_str ) && /^[0-9A-Z_.]+[^_.]$/i.test( ns_str ) ) {
+        obj = storage.modules;
 
-        C.each( host.split("."), function( part, idx ) {
+        C.each( ns_str.split("."), function( part, idx ) {
             if ( obj[ part ] === undefined ) {
                 obj[ part ] = {};
             }
 
             obj = obj[ part ];
         });
-
-        host = obj;
     }
+
+    return obj;
+}
+
+function batch( set, data, context ) {
+    var host = namespace( data.module );
+
+    C.each( set, function( info ) {
+        attach(host, info, data, context);
+    });
+}
+
+function attach( host, set, data, context ) {
+    var name = set.name;
 
     if ( !C.isFunction(host[name]) ) {
         var handler = set.handler;

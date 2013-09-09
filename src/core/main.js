@@ -9,71 +9,9 @@ define(function( require, exports, module ) {
 
 "use strict";
 
-// Object types
-var objType = {};
-// collection of modules
-var modules = {};
-// default settings
-var settings = {
-        validator: function() {}
-    };
-
 // Save a reference to some core methods
 var toString = Object.prototype.toString;
 var hasOwn = Object.prototype.hasOwnProperty;
-
-// each( "Boolean Number String Function Array Date RegExp Object".split(" "), function( name, i ) {
-//         var lc = name.toLowerCase();
-
-//         // populate the objType map
-//         objType[ "[object " + name + "]" ] = lc;
-
-//         // add methods such as isNumber/isBoolean/...
-//         module.exports.handlers.push(
-//             {
-//                 name: "is" + name,
-//                 handler: function( obj ) {
-//                     return this.type( obj ) === lc;
-//                 },
-//                 validator: function() {
-//                     return true;
-//                 }
-//             }
-//         );
-//     }
-// );
-
-function each( object, callback ) {
-    var type = this.type( object );
-    var index = 0;
-    var name;
-
-    if ( type in { "object": true, "function": true } ) {
-        for ( name in object ) {
-            if ( callback.apply( object[name], [ object[name], name, object ] ) === false ) {
-                break;
-            }
-        }
-    }
-    else if ( type in { "array": true, "string": true } ) {
-        var ele;
-
-        for ( ; index < object.length; ) {
-            if ( type === "array" ) {
-                ele = object[index];
-            }
-            else {
-                ele = object.charAt(index);
-            }
-
-            if ( callback.apply( object[index], [ ele, index++, object ] ) === false ) {
-                break;
-            }
-        }
-    }
-
-    return object;
-}
 
 /**
  * Compare objects' values or references.
@@ -128,51 +66,6 @@ module.exports = {
     module: "Core.Common",
     handlers: [
         /**
-         * 扩展指定对象
-         * 
-         * @method  mixin
-         * @param   unspecified {Mixed}
-         * @return  {Object}
-         */
-        {
-            name: "mixin",
-            handler: function() {
-                var args = arguments;
-                var target = args[0] || {};
-                var i = 1;
-
-                // 只传一个参数时，扩展自身
-                if ( args.length === 1 ) {
-                    target = this;
-                    i--;
-                }
-
-                for ( ; i < args.length; i++ ) {
-                    var opts = args[i];
-
-                    if ( typeof opts === "object" ) {
-                        var name;
-
-                        for ( name in opts ) {
-                            var copy = opts[name];
-
-                            // 阻止无限循环
-                            if ( copy === target ) {
-                                continue;
-                            }
-
-                            if ( copy !== undefined ) {
-                                target[name] = copy;
-                            }
-                        }
-                    }
-                }
-
-                return target;
-            }
-        },
-
-        /**
          * 将其他组件组装到核心对象上
          * 
          * @method  absorb
@@ -187,49 +80,6 @@ module.exports = {
                 }
 
                 return this;
-            }
-        },
-
-        /**
-         * 遍历
-         * 
-         * @method  each
-         * @param   object {Object/Array/Function}
-         * @param   callback {Function}
-         * @return  {Mixed}
-         */
-        {
-            name: "each",
-            handler: function( object, callback ) {
-                var type = this.type( object );
-                var index = 0;
-                var name;
-
-                if ( type in { "object": true, "function": true } ) {
-                    for ( name in object ) {
-                        if ( callback.apply( object[name], [ object[name], name, object ] ) === false ) {
-                            break;
-                        }
-                    }
-                }
-                else if ( type in { "array": true, "string": true } ) {
-                    var ele;
-
-                    for ( ; index < object.length; ) {
-                        if ( type === "array" ) {
-                            ele = object[index];
-                        }
-                        else {
-                            ele = object.charAt(index);
-                        }
-
-                        if ( callback.apply( object[index], [ ele, index++, object ] ) === false ) {
-                            break;
-                        }
-                    }
-                }
-
-                return object;
             }
         },
 
@@ -276,20 +126,6 @@ module.exports = {
                 });
 
                 return ns;
-            }
-        },
-
-        /**
-         * 获取对象类型
-         * 
-         * @method  type
-         * @param   object {Mixed}
-         * @return  {String}
-         */
-        {
-            name: "type",
-            handler: function( object ) {
-                return object == null ? String(object) : objType[ toString.call(object) ] || "object";
             }
         },
 
