@@ -17,5 +17,4 @@ var Constructor = require("./core/constructor");
 
 module.exports = (new Constructor(data, true)).instance;
 
-console.dir(Constructor);
 });

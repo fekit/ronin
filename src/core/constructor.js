@@ -161,6 +161,7 @@ C.modules = storage.modules;
 // };
 
 C.prototype = {
+    constructor: C,
     add: function( set ) {
         return attach(set);
     }
@@ -175,7 +176,7 @@ func.each( "Boolean Number String Function Array Date RegExp Object".split(" "),
         // add methods such as isNumber/isBoolean/...
         name = "is" + name;
 
-        func[name] = storage.core[name] = function( obj ) {
+        storage.core[name] = func[name] = function( obj ) {
             return this.type(obj) === lc;
         };
     }
