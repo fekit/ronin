@@ -10,6 +10,9 @@ define(function( require, exports, module ) {
 "use strict";
 
 module.exports = {
+    validator: function() {
+        return true;
+    },
     handlers: [
         /**
          * Get a set of keys/indexes.
