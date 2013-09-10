@@ -128,43 +128,56 @@ var func = {
     };
 
 /**
- * Constructor
+ * A constructor to batch constructing methods
  *
- * @method  C
- * @param   data {Array}
- * @param   module {Object/String}
- * @param   isCore {Boolean}
- * @return
+ * @class   Constructor
+ * @constructor
  */
-function C( data, module, isCore ) {
+function Constructor() {
     var args = arguments;
+    var data = args[0];     // data of module's methods
+    var module = args[1];   // module's namespace format string
+    var isCore = args[2];   // whether copy to the core-method-object
 
+    // When parameter's length is 2,
+    // e.g., new Constructor([[data_1, module_1], [data_2, module_2], [data_n, module_n]], true)
     if ( args.length === 2 ) {
         isCore = module;
     }
 
+    // Batch adding methods
     batch.apply(this, [namespace(module), data.handlers, data, (isCore === true ? true : false)]);
 }
 
-// expose modules
-C.modules = storage.modules;
+// Properties of constructor
+func.mixin( Constructor, {
+    /* Override default properties. */
+    toString: function() {
+        return "function " + this.name + "() { [native code] }";
+    },
 
-// Override global setting
-// C.config = function( setting ) {
-//     var key;
+    /* Self-definition properties. */
+    modules: storage.modules,
+    // Override global setting
+    config: function( setting ) {
+        func.mixin(settings, setting);
+    }
+});
 
-//     for ( key in setting ) {
-//         settings[key] = setting[key];
-//     }
-// };
-
-C.prototype = {
-    constructor: C,
+// Properties of instances
+Constructor.prototype = {
+    // Override default properties.
+    constructor: Constructor,
+    toString: function() {
+        return "[object " + this.constructor.name + "]";
+    },
+    // Self-definition properties.
     add: function( set ) {
         return attach(set);
     }
 };
 
+// Fill the map object-types, and add methods to detect object-type.
 func.each( "Boolean Number String Function Array Date RegExp Object".split(" "), function( name, i ) {
         var lc = name.toLowerCase();
 
@@ -234,6 +247,7 @@ function namespace( ns_str ) {
  * @param   host {Object}       the host of methods to be added
  * @param   handlers {Object}   data of a method
  * @param   data {Object}       data of a module
+ * @param   isCore {Boolean}    whether copy to the core-method-object
  * @return
  */
 function batch( host, handlers, data, isCore ) {
@@ -259,6 +273,7 @@ function batch( host, handlers, data, isCore ) {
  * @param   host {Object}       the host of methods to be added
  * @param   set {Object}        data of a method
  * @param   data {Object}       data of a module
+ * @param   isCore {Boolean}    whether copy to the core-method-object
  * @return
  */
 function attach( host, set, data, isCore ) {
@@ -280,21 +295,22 @@ function attach( host, set, data, isCore ) {
         }
 
         var method = function() {
-            return validator.apply(inst.instance, arguments) === true && func.isFunction(handler) ? handler.apply(inst.instance, arguments) : value;
+            return validator.apply(inst, arguments) === true && func.isFunction(handler) ? handler.apply(inst, arguments) : value;
         };
 
         host[name] = method;
 
         if ( isCore === true ) {
             storage.core[name] = method;
-            inst.instance = storage.core;
+
+            func.mixin(inst, storage.core)
         }
         else {
-            inst.instance = host;
+            func.mixin(inst, host)
         }
     }
 }
 
-module.exports = C;
+module.exports = Constructor;
 
 });
