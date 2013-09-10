@@ -133,19 +133,17 @@ var func = {
  * @method  C
  * @param   data {Array}
  * @param   module {Object/String}
- * @param   isCore {Boolea}
+ * @param   isCore {Boolean}
  * @return
  */
 function C( data, module, isCore ) {
     var args = arguments;
 
     if ( args.length === 2 ) {
-        if ( module === true ) {
-            isCore = args[1];
-        }
+        isCore = module;
     }
 
-    batch.apply(this, [namespace(module), data.handlers, data, !!isCore]);
+    batch.apply(this, [namespace(module), data.handlers, data, (isCore === true ? true : false)]);
 }
 
 // expose modules
