@@ -7,18 +7,14 @@
  */
 define(function( require, exports, module ) {
 
-var C = require("./core/constructor");
+var data = [
+        [require( "./core/main" ), "Core.Common"],
+        [require( "./core/object" ), "Core.Object"],
+        [require( "./core/array" ), "Core.Array"],
+        [require( "./core/string" ), "Core.String"]
+    ];
+var Constructor = require("./core/constructor");
 
-var $ = require( "./core/main" );
-// var utils = [
-// 		require( "./core/object" ),
-// 		require( "./core/array" ),
-// 		require( "./core/string" )
-// 	];
-
-	new C(C, $);
-console.dir( C );
-
-// module.exports = $.absorb( utils );
+module.exports = (new Constructor(data, true)).instance;
 
 });

@@ -1,5 +1,5 @@
 /*!
- * Core
+ * Construcotr
  * 
  * Developed by Ourai Lin, http://ourai.ws/
  * 
@@ -9,40 +9,40 @@ define(function( require, exports, module ) {
 
 "use strict";
 
+// Save a reference to some core methods.
+var toString = Object.prototype.toString;
 // default settings
 var settings = {
         validator: function() {}
     };
 // storage for internal usage
 var storage = {
-        host: null,
-        types: {},
+        core: {},       // copy of core methods
+        types: {},      // map of object types
         modules: {}
     };
+
+var NAMESPACE_EXP = /^[0-9A-Z_.]+[^_.]$/i;
 
 /**
  * Constructor
  *
  * @method  C
- * @param   host {Object/String}
  * @param   data {Array}
- * @param   context {Mixed}
+ * @param   module {Object/String}
+ * @param   isCore {Boolea}
  * @return
  */
-function C( host, data, context ) {
-    // Handle's default context is the host variable.
-    if ( arguments.length < 3 ) {
-        context = host;
+function C( data, module, isCore ) {
+    var args = arguments;
+
+    if ( args.length === 2 ) {
+        if ( module === true ) {
+            isCore = args[1];
+        }
     }
 
-    if ( C.isArray(data) ) {
-        C.each( data, function( d ) {
-            batch( d.handlers, d, context );
-        });
-    }
-    else if ( C.isObject(data) ) {
-        batch( data.handlers, data, context );
-    }
+    batch.apply(this, [namespace(module), data.handlers, data, !!isCore]);
 }
 
 /**
@@ -155,6 +155,12 @@ C.each( "Boolean Number String Function Array Date RegExp Object".split(" "), fu
 
 C.modules = storage.modules;
 
+C.each( C, function( value, key ) {
+    if ( C.isFunction(value) ) {
+        storage.core[key] = value;
+    }
+});
+
 // Override global setting
 // C.config = function( setting ) {
 //     var key;
@@ -170,11 +176,19 @@ C.prototype = {
     }
 };
 
+/**
+ * 添加命名空间
+ *
+ * @private
+ * @method  namespace
+ * @param   ns_str {String}     a namespace format string (e.g. 'Module.Package')
+ * @return  {Object}
+ */
 function namespace( ns_str ) {
-    var obj;
+    var obj = null;
 
     // Generate an object when the host variable is a namespace string.
-    if ( C.isString( ns_str ) && /^[0-9A-Z_.]+[^_.]$/i.test( ns_str ) ) {
+    if ( C.isString( ns_str ) && NAMESPACE_EXP.test( ns_str ) ) {
         obj = storage.modules;
 
         C.each( ns_str.split("."), function( part, idx ) {
@@ -189,16 +203,44 @@ function namespace( ns_str ) {
     return obj;
 }
 
-function batch( set, data, context ) {
-    var host = namespace( data.module );
+/**
+ * 批量添加 method
+ *
+ * @private
+ * @method  batch
+ * @param   host {Object}       the host of methods to be added
+ * @param   handlers {Object}   data of a method
+ * @param   data {Object}       data of a module
+ * @return
+ */
+function batch( host, handlers, data, isCore ) {
+    var context = this;
 
-    C.each( set, function( info ) {
-        attach(host, info, data, context);
-    });
+    if ( C.isArray(data) ) {
+        C.each( data, function( d ) {
+            batch.apply(context, [(C.isString(d[1]) && NAMESPACE_EXP.test(d[1]) ? namespace(d[1]) : host), d.handlers, d, isCore]);
+        });
+    }
+    else if ( C.isObject(data) ) {
+        C.each( handlers, function( info ) {
+            attach.apply(context, [host, info, data, isCore]);
+        });
+    }
 }
 
-function attach( host, set, data, context ) {
+/**
+ * 构造 method
+ *
+ * @private
+ * @method  attach
+ * @param   host {Object}       the host of methods to be added
+ * @param   set {Object}        data of a method
+ * @param   data {Object}       data of a module
+ * @return
+ */
+function attach( host, set, data, isCore ) {
     var name = set.name;
+    var inst = this;
 
     if ( !C.isFunction(host[name]) ) {
         var handler = set.handler;
@@ -214,9 +256,19 @@ function attach( host, set, data, context ) {
             }
         }
 
-        host[name] = function() {
-            return validator.apply(context, arguments) === true && C.isFunction(handler) ? handler.apply(context, arguments) : value;
+        var method = function() {
+            return validator.apply(inst.instance, arguments) === true && C.isFunction(handler) ? handler.apply(inst.instance, arguments) : value;
         };
+
+        host[name] = method;
+
+        if ( isCore === true ) {
+            storage.core[name] = method;
+            inst.instance = storage.core;
+        }
+        else {
+            inst.instance = host;
+        }
     }
 }
 
