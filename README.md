@@ -18,6 +18,15 @@
 
 基于工具集开发的高级模块集，为了进行有针对性的开发而存在。各模块只在用到的时候通过 Module Loader 加载就行。
 
+## 使用方式
+
+如下面代码：
+
+    <script src="Takara/lib/seajs/dist/sea.js"></script>
+    <script src="Takara/src/install.js"></script>
+
+若没有引入 sea.js 而直接引入 install.js 的话，会自动添加 sea.js 并且有一段加载时间。为了保证程序能够正常运行，最好在引用 install.js 之前先引用 sea.js。
+
 ## 建议反馈
 
 如果您有任何问题、建议或者发现有“臭虫”混进来了，请发 [issue](https://github.com/ourai/Takara/issues) 给我。
