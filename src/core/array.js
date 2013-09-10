@@ -10,7 +10,6 @@ define(function( require, exports, module ) {
 "use strict";
 
 module.exports = {
-    package: "Array",
     value: [],
     validator: function( object ) {
         return isArr( object );

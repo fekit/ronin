@@ -10,7 +10,6 @@ define(function( require, exports, module ) {
 "use strict";
 
 // Save a reference to some core methods
-var toString = Object.prototype.toString;
 var hasOwn = Object.prototype.hasOwnProperty;
 
 /**
@@ -63,7 +62,9 @@ function compareObjects( base, target, strict, connate ) {
 }
 
 module.exports = {
-    module: "Core.Common",
+    validator: function() {
+        return true;
+    },
     handlers: [
         /**
          * 将其他组件组装到核心对象上
@@ -253,6 +254,9 @@ module.exports = {
                 }
 
                 return result;
+            },
+            validator: function() {
+                return true;
             }
         },
 

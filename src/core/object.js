@@ -10,7 +10,6 @@ define(function( require, exports, module ) {
 "use strict";
 
 module.exports = {
-    package: "Object",
     handlers: [
         /**
          * Get a set of keys/indexes.
