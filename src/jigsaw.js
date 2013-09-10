@@ -7,14 +7,14 @@
  */
 define(function( require, exports, module ) {
 
-var $ = require( "./core" );
+var data = [
+        [require( "./core/main" ), "Core.Global"],
+        [require( "./core/object" ), "Core.Object"],
+        [require( "./core/array" ), "Core.Array"],
+        [require( "./core/string" ), "Core.String"]
+    ];
+var Constructor = require("./core/constructor");
 
-module.exports = $.mixin( $,
-		// 工具
-		require( "./util/object" ),
-		require( "./util/array" ),
-		require( "./util/string" ),
-		require( "./util/i18n" )
-	);
+module.exports = new Constructor(data, true);
 
 });

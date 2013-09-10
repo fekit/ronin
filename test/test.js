@@ -206,3 +206,14 @@ function i18n() {
     console.log( "skill.dhtml: ", JR.i18n( "skill.dhtml" ) );
     console.log( "skill.rate: ", JR.i18n( "skill.rate" ) );
 }
+
+function testAllMethod() {
+    JR.each( JR, function( method, name ) {
+        try {
+            method();
+        }
+        catch (e) {
+            console.log(name);
+        }
+    });
+}
