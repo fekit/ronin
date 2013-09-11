@@ -76,6 +76,24 @@ var func = {
         },
 
         /**
+         * 将其他组件组装到核心对象上
+         * 
+         * @method  absorb
+         * @param   object {Object}
+         * @return
+         */
+        // {
+        //     name: "absorb",
+        //     handler: function( object ) {
+        //         if ( this.isArray(object) ) {
+        //             var inst = new Constructor(this, object);
+        //         }
+
+        //         return this;
+        //     }
+        // },
+
+        /**
          * 遍历
          * 
          * @method  each
