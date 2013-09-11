@@ -12,7 +12,7 @@ define(function( require, exports, module ) {
 module.exports = {
     value: "",
     validator: function( object ) {
-        return isStr( object );
+        return this.isString( object );
     },
     handlers: [
         /**
@@ -65,12 +65,15 @@ module.exports = {
          * 
          * @method  capitalize
          * @param   string {String}     源字符串
+         * @param   isAll {Boolean}     是否将所有英文字符串首字母大写
          * @return  {String}
          */
         {
             name: "capitalize",
-            handler: function( string ) {
-                return string.replace(/[a-z]+/ig, function( c ) {
+            handler: function( string, isAll ) {
+                var exp = "[a-z]+";
+
+                return string.replace((isAll === true ? new RegExp(exp, "ig") : new RegExp(exp)), function( c ) {
                         return c.charAt(0).toUpperCase() + c.slice(1).toLowerCase();
                     });
             }
@@ -142,7 +145,7 @@ module.exports = {
                 return result;
             },
             validator: function( number, digit ) {
-                return isNumeric(number) && isNumeric(digit) && /^-?[1-9]\d*$/.test(digit);
+                return this.isNumeric(number) && this.isNumeric(digit) && /^-?[1-9]\d*$/.test(digit);
             }
         },
 
@@ -163,6 +166,43 @@ module.exports = {
                 var func = "".trim;
 
                 return func && !func.call( "\uFEFF\xA0" ) ? func.call( string ) : string.replace( rtrim, "" );
+            }
+        },
+
+        /**
+         * Returns the characters in a string beginning at the specified location through the specified number of characters.
+         *
+         * @method  substr
+         * @param   string {String}         The input string. Must be one character or longer.
+         * @param   start {Integer}         Location at which to begin extracting characters.
+         * @param   length {Integer}        The number of characters to extract.
+         * @param   ignore {String/RegExp}  Characters to be ignored (will not include in the length).
+         * @return  {String}
+         * 
+         * refer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substr
+         */
+        {
+            name: "substr",
+            handler: function( string, start, length, ignore ) {
+                var args = arguments;
+                var lib = this;
+
+                if ( args.length === 3 &&
+                        lib.isNumeric(start) && start > 0 &&
+                        (lib.isString(length) || lib.isRegExp(length)) ) {
+                    string = ignoreSubStr.apply(lib, [string, start, length]);
+                }
+                else if ( lib.isNumeric(start) && start >= 0 ) {
+                    if ( !lib.isNumeric(length) || length <= 0 ) {
+                        length = string.length;
+                    }
+
+                    string = lib.isString(ignore) || lib.isRegExp(ignore) ?
+                            ignoreSubStr.apply(lib, [string.substring(start), length, ignore]) :
+                            string.substring(start, length);
+                }
+
+                return string;
             }
         },
 
@@ -289,27 +329,33 @@ module.exports = {
 };
 
 /**
- * Determine whether the object is a string.
+ * Ignore specified strings.
  *
  * @private
- * @method  isStr
- * @param   object {Mixed}
- * @return  {Boolean}
+ * @method  ignoreSubStr
+ * @param   string {String}         The input string. Must be one character or longer.
+ * @param   length {Integer}        The number of characters to extract.
+ * @param   ignore {String/RegExp}  Characters to be ignored (will not include in the length).
+ * @return  {String}
  */
-function isStr( object ) {
-    return typeof object === "string";
-}
+function ignoreSubStr( string, length, ignore ) {
+    var lib = this;
+    var exp = lib.isRegExp(ignore) ? ignore : new RegExp(ignore, "ig");
+    var result;
 
-/**
- * Determine whether the object is a number or a numeric string.
- *
- * @private
- * @method  isNumeric
- * @param   object {Mixed}
- * @return  {Boolean}
- */
-function isNumeric( object ) {
-    return !isNaN( parseFloat(object) ) && isFinite( object );
+    if ( !exp.global ) {
+        exp = new RegExp(exp.source, "ig");
+    }
+
+    while( (result = exp.exec(string)) ) {
+        if ( result.index < length ) {
+            length += result[0].length;
+        }
+
+        result.lastIndex = 0;
+    }
+
+    return string.substring(0, length);
 }
 
 /**
