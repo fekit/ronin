@@ -13,7 +13,7 @@ define(function( require, exports, module ) {
 var toString = Object.prototype.toString;
 
 // Regular expressions
-var NAMESPACE_EXP = /^[0-9A-Z_.]+[^_.]$/i;
+var NAMESPACE_EXP = /^[0-9A-Z_.]+[^_.]?$/i;
 
 // default settings
 var settings = {
