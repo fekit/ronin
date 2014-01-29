@@ -67,24 +67,6 @@ module.exports = {
     },
     handlers: [
         /**
-         * 将其他组件组装到核心对象上
-         * 
-         * @method  absorb
-         * @param   object {Object}
-         * @return
-         */
-        {
-            name: "absorb",
-            handler: function( object ) {
-                if ( this.isArray(object) ) {
-                    var inst = new Constructor(this, object);
-                }
-
-                return this;
-            }
-        },
-
-        /**
          * Returns the namespace specified and creates it if it doesn't exist.
          * Be careful when naming packages.
          * Reserved words may work in some browsers and not others.

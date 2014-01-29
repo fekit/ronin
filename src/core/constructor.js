@@ -13,7 +13,7 @@ define(function( require, exports, module ) {
 var toString = Object.prototype.toString;
 
 // Regular expressions
-var NAMESPACE_EXP = /^[0-9A-Z_.]+[^_.]$/i;
+var NAMESPACE_EXP = /^[0-9A-Z_.]+[^_.]?$/i;
 
 // default settings
 var settings = {
@@ -74,6 +74,24 @@ var func = {
 
             return target;
         },
+
+        /**
+         * 将其他组件组装到核心对象上
+         * 
+         * @method  absorb
+         * @param   object {Object}
+         * @return
+         */
+        // {
+        //     name: "absorb",
+        //     handler: function( object ) {
+        //         if ( this.isArray(object) ) {
+        //             var inst = new Constructor(this, object);
+        //         }
+
+        //         return this;
+        //     }
+        // },
 
         /**
          * 遍历
