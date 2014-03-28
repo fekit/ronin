@@ -1,6 +1,4 @@
-# Takara
-
-**Takara** 是日语「宝」的罗马音，为“宝藏”的意思。
+# Rōnin
 
 本项目（Code name: Revolution）是一个 JavaScript 解决方案、增强库，旨在解决原生 JavaScript 函数/方法所无法处理的事情，让 JavaScript 开发者们编写功能模块时少写些代码、更加得心应手！
 
@@ -22,13 +20,13 @@
 
 如下面代码：
 
-    <script src="Takara/lib/seajs/dist/sea.js"></script>
-    <script src="Takara/src/install.js"></script>
+    <script src="ronin/lib/seajs/dist/sea.js"></script>
+    <script src="ronin/src/install.js"></script>
 
 若没有引入 sea.js 而直接引入 install.js 的话，会自动添加 sea.js 并且有一段加载时间。为了保证程序能够正常运行，最好在引用 install.js 之前先引用 sea.js。
 
 ## 建议反馈
 
-如果您有任何问题、建议或者发现有“臭虫”混进来了，请发 [issue](https://github.com/ourai/Takara/issues) 给我。
+如果您有任何问题、建议或者发现有“臭虫”混进来了，请发 [issue](https://github.com/ourai/ronin/issues) 给我。
 
 Thanks for your helps!!! ;-)
