@@ -1,0 +1,6 @@
+# Directories
+/vendors
+/node_modules
+/dest/*.*/
+
+# Files
