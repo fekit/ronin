@@ -1,1 +1,0 @@
-各全局对象（Global Objects）的工具方法
