@@ -5,9 +5,10 @@ module.exports = function( grunt ) {
       version: pkg.version
     };
   var npmTasks = [
-      "grunt-contrib-concat",
       "grunt-contrib-coffee",
       "grunt-contrib-uglify",
+      "grunt-contrib-concat",
+      "grunt-contrib-clean",
       "grunt-contrib-copy"
     ];
   var index = 0;
@@ -15,25 +16,25 @@ module.exports = function( grunt ) {
 
   grunt.initConfig({
     pkg: pkg,
-    dirs: {
+    meta: {
       src: "src",
-      coffee: "src/coffee",
-      matcha: "src/vendors/matcha",
-      dest: "dest/<%= pkg.version %>"
+      coffee: "<%= meta.src %>/coffee",
+      core: "<%= meta.coffee %>/core",
+      dest: "dest",
+      build: "build",
+      tests: "<%= meta.build %>/tests",
+      tasks: "<%= meta.build %>/tasks"
     },
     concat: {
       coffee: {
-        src: ["<%= dirs.coffee %>/intro.coffee",
-              "<%= dirs.coffee %>/variables.coffee",
-              "<%= dirs.coffee %>/functions.coffee",
-              "<%= dirs.coffee %>/util.coffee",
-              "<%= dirs.coffee %>/flow.coffee",
-              "<%= dirs.coffee %>/project.coffee",
-              "<%= dirs.coffee %>/storage.coffee",
-              "<%= dirs.coffee %>/request.coffee",
-              "<%= dirs.coffee %>/html.coffee",
-              "<%= dirs.coffee %>/outro.coffee"],
-        dest: "<%= dirs.dest %>/<%= pkg.name %>.coffee"
+        src: ["<%= meta.coffee %>/intro.coffee",
+              "<%= meta.coffee %>/variables.coffee",
+              "<%= meta.coffee %>/functions.coffee",
+              "<%= meta.core %>/global.coffee",
+              "<%= meta.core %>/object.coffee",
+              "<%= meta.coffee %>/bridge.coffee",
+              "<%= meta.coffee %>/outro.coffee"],
+        dest: "<%= meta.dest %>/<%= pkg.name %>.coffee"
       },
       js: {
         options: {
@@ -43,17 +44,11 @@ module.exports = function( grunt ) {
             });
           }
         },
-        src: ["<%= dirs.matcha %>/matcha.js",
-              "<%= dirs.src %>/intro.js",
-              "<%= dirs.src %>/<%= pkg.name %>.js",
-              "<%= dirs.src %>/outro.js"],
-        dest: "<%= dirs.dest %>/<%= pkg.name %>.js"
-      },
-      css: {
-        files: {
-          "<%= dirs.dest %>/<%= pkg.name %>.css": "<%= dirs.matcha %>/matcha.css",
-          "<%= dirs.dest %>/<%= pkg.name %>.min.css": "<%= dirs.matcha %>/matcha.min.css"
-        }
+        src: ["<%= meta.src %>/vendors/miso.js",
+              "<%= meta.src %>/intro.js",
+              "<%= meta.src %>/<%= pkg.name %>.js",
+              "<%= meta.src %>/outro.js"],
+        dest: "<%= meta.dest %>/<%= pkg.name %>.js"
       }
     },
     coffee: {
@@ -62,8 +57,8 @@ module.exports = function( grunt ) {
         separator: "\x20"
       },
       build: {
-        src: "<%= dirs.dest %>/<%= pkg.name %>.coffee",
-        dest: "<%= dirs.src %>/<%= pkg.name %>.js"
+        src: "<%= meta.dest %>/<%= pkg.name %>.coffee",
+        dest: "<%= meta.src %>/<%= pkg.name %>.js"
       }
     },
     uglify: {
@@ -71,22 +66,21 @@ module.exports = function( grunt ) {
         banner: "/*! <%= pkg.name %> <%= grunt.template.today('yyyy-mm-dd') %> */\n"
       },
       build: {
-        src: "<%= dirs.dest %>/<%= pkg.name %>.js",
-        dest: "<%= dirs.dest %>/<%= pkg.name %>.min.js"
+        src: "<%= meta.dest %>/<%= pkg.name %>.js",
+        dest: "<%= meta.dest %>/<%= pkg.name %>.min.js"
+      }
+    },
+    clean: {
+      compiled: {
+        src: ["<%= meta.dest %>/*.coffee"]
       }
     },
     copy: {
-      build: {
+      test: {
         expand: true,
-        cwd: "<%= dirs.dest %>",
-        src: ["**.js", "**.css", "**/*.scss"],
-        dest: "dest"
-      },
-      matcha: {
-        expand: true,
-        cwd: "<%= dirs.matcha %>",
-        src: ["**/*.scss"],
-        dest: "<%= dirs.dest %>"
+        cwd: "<%= meta.dest %>",
+        src: ["**.js"],
+        dest: "<%= meta.tests %>"
       }
     }
   });
@@ -95,7 +89,6 @@ module.exports = function( grunt ) {
     grunt.loadNpmTasks(npmTasks[index]);
   }
 
-  grunt.registerTask("script", ["concat:coffee", "coffee", "concat:js", "uglify"]);
-  grunt.registerTask("style", ["concat:css", "copy:matcha"]);
-  grunt.registerTask("default", ["script", "style", "copy:build"]);
+  grunt.registerTask("compile", ["concat:coffee", "coffee", "concat:js", "uglify"]);
+  grunt.registerTask("default", ["compile", "clean", "copy"]);
 };
