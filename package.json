@@ -1,6 +1,6 @@
 {
   "name": "ronin",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "Aims to solve some JavaScript problems",
   "homepage": "http://jr.ourai.ws/",
   "keywords": [
@@ -23,6 +23,7 @@
     "grunt-contrib-coffee": "~0.10.0",
     "grunt-contrib-uglify": "~0.4.0",
     "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-copy": "~0.5.0"
   }
 }
