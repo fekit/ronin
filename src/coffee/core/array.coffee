@@ -104,7 +104,6 @@ floatLength = ( number ) ->
 range = ( begin, end, step, callback ) ->
   array = []
 
-
   while begin <= end
     array.push if callback then callback(begin) else begin
     begin += step
