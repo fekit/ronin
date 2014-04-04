@@ -8,4 +8,4 @@ storage.modules.Core.push [
 
 _H = ->
 
-Miso.__builtIn__.mixin _H, (new Miso storage.modules.Core).object
+new Miso storage.modules.Core, _H

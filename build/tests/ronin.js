@@ -247,11 +247,16 @@ _builtin.each("Boolean Number String Function Array Date RegExp Object".split(" 
 
 Constructor = (function() {
   function Constructor() {
-    var data;
+    var args, data, host, _ref;
     this.constructor = Constructor;
     this.object = {};
-    data = arguments[0];
-    batch.apply(this, [this.object, data != null ? data.handlers : void 0, data]);
+    args = arguments;
+    data = args[0];
+    host = args[1];
+    if (args.length < 2 || !((_ref = typeof host) === "object" || _ref === "function")) {
+      host = this.object;
+    }
+    batch.apply(this, [host, data != null ? data.handlers : void 0, data]);
   }
 
   Constructor.prototype.toString = function() {
@@ -1582,7 +1587,7 @@ storage.modules.Core.push([
 
 _H = function() {};
 
-Miso.__builtIn__.mixin(_H, (new Miso(storage.modules.Core)).object);
+new Miso(storage.modules.Core, _H);
 
 window[LIB_CONFIG.name] = _H;
 
