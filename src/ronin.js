@@ -1,5 +1,5 @@
 "use strict";
-var LIB_CONFIG, NAMESPACE_EXP, compareObjects, filterElement, flattenArray, floatLength, func, getMaxMin, hasOwn, ignoreSubStr, isArr, isCollection, name, range, settings, slicer, storage, toString, unicode, utf8_to_base64, _H;
+var LIB_CONFIG, NAMESPACE_EXP, compareObjects, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, settings, storage, toString, unicode, utf8_to_base64, _H;
 
 LIB_CONFIG = {
   name: "@NAME",
@@ -7,8 +7,6 @@ LIB_CONFIG = {
 };
 
 toString = {}.toString;
-
-hasOwn = {}.hasOwnProperty;
 
 NAMESPACE_EXP = /^[0-9A-Z_.]+[^_.]?$/i;
 
@@ -20,19 +18,6 @@ storage = {
   modules: {
     Core: []
   }
-};
-
-
-/*
- * 切割 Array Like 片段
- *
- * @private
- * @method   slicer
- * @return
- */
-
-slicer = function(args, index) {
-  return [].slice.call(args, Number(index) || 0);
 };
 
 
@@ -181,7 +166,7 @@ storage.modules.Core.push([
             return false;
           }
           try {
-            if (object.constructor && !hasOwn.call(object, "constructor") && !hasOwn.call(object.constructor.prototype, "isPrototypeOf")) {
+            if (object.constructor && !this.hasProp(object, "constructor") && !this.hasProp(object.constructor.prototype, "isPrototypeOf")) {
               return false;
             }
           } catch (_error) {
@@ -191,7 +176,7 @@ storage.modules.Core.push([
           for (key in object) {
             key;
           }
-          return key === void 0 || hasOwn.call(object, key);
+          return key === void 0 || this.hasProp(object, key);
         }
       }, {
 

@@ -16,7 +16,7 @@
 }(typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
 
 "use strict";
-var BuiltIn, Constructor, LIB_CONFIG, NAMESPACE_EXP, attach, batch, hasOwn, namespace, settings, storage, toString, _H, _builtin;
+var BuiltIn, Constructor, LIB_CONFIG, NAMESPACE_EXP, attach, batch, hasOwnProp, namespace, settings, storage, toString, _H, _builtin;
 
 LIB_CONFIG = {
   name: "Miso",
@@ -24,8 +24,6 @@ LIB_CONFIG = {
 };
 
 toString = {}.toString;
-
-hasOwn = {}.hasOwnProperty;
 
 NAMESPACE_EXP = /^[0-9A-Z_.]+[^_.]?$/i;
 
@@ -40,6 +38,27 @@ storage = {
     Core: {
       BuiltIn: null
     }
+  }
+};
+
+
+/*
+ * 判断某个对象是否有自己的指定属性
+ *
+ * !!! 不能用 object.hasOwnProperty(prop) 这种方式，低版本 IE 不支持。
+ *
+ * @private
+ * @method   hasOwnProp
+ * @param    obj {Object}    Target object
+ * @param    prop {String}   Property to be tested
+ * @return   {Boolean}
+ */
+
+hasOwnProp = function(obj, prop) {
+  if (obj == null) {
+    return false;
+  } else {
+    return Object.prototype.hasOwnProperty.call(obj, prop);
   }
 };
 
@@ -114,7 +133,7 @@ attach = function(host, set, data) {
   name = set.name;
   if (!_builtin.isFunction(host[name])) {
     handler = set.handler;
-    value = hasOwn.call(set, "value") ? set.value : data.value;
+    value = hasOwnProp(set, "value") ? set.value : data.value;
     validators = [set.validator, data.validator, settings.validator, function() {}];
     for (_i = 0, _len = validators.length; _i < _len; _i++) {
       validator = validators[_i];
@@ -223,6 +242,36 @@ BuiltIn = (function() {
     }
   };
 
+
+  /*
+   * 切割 Array-Like Object 片段
+   *
+   * @method   slice
+   * @param    args {Array-Like}
+   * @param    index {Integer}
+   * @return
+   */
+
+  BuiltIn.prototype.slice = function(args, index) {
+    if (args == null) {
+      return [];
+    } else {
+      return [].slice.call(args, Number(index) || 0);
+    }
+  };
+
+
+  /*
+   * 判断某个对象是否有自己的指定属性
+   *
+   * @method   hasProp
+   * @return   {Boolean}
+   */
+
+  BuiltIn.prototype.hasProp = function() {
+    return hasOwnProp.apply(this, this.slice(arguments));
+  };
+
   return BuiltIn;
 
 })();
@@ -305,7 +354,7 @@ window[LIB_CONFIG.name] = _H;
 }(typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
 
 "use strict";
-var LIB_CONFIG, NAMESPACE_EXP, compareObjects, filterElement, flattenArray, floatLength, func, getMaxMin, hasOwn, ignoreSubStr, isArr, isCollection, name, range, settings, slicer, storage, toString, unicode, utf8_to_base64, _H;
+var LIB_CONFIG, NAMESPACE_EXP, compareObjects, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, settings, storage, toString, unicode, utf8_to_base64, _H;
 
 LIB_CONFIG = {
   name: "Ronin",
@@ -313,8 +362,6 @@ LIB_CONFIG = {
 };
 
 toString = {}.toString;
-
-hasOwn = {}.hasOwnProperty;
 
 NAMESPACE_EXP = /^[0-9A-Z_.]+[^_.]?$/i;
 
@@ -326,19 +373,6 @@ storage = {
   modules: {
     Core: []
   }
-};
-
-
-/*
- * 切割 Array Like 片段
- *
- * @private
- * @method   slicer
- * @return
- */
-
-slicer = function(args, index) {
-  return [].slice.call(args, Number(index) || 0);
 };
 
 
@@ -487,7 +521,7 @@ storage.modules.Core.push([
             return false;
           }
           try {
-            if (object.constructor && !hasOwn.call(object, "constructor") && !hasOwn.call(object.constructor.prototype, "isPrototypeOf")) {
+            if (object.constructor && !this.hasProp(object, "constructor") && !this.hasProp(object.constructor.prototype, "isPrototypeOf")) {
               return false;
             }
           } catch (_error) {
@@ -497,7 +531,7 @@ storage.modules.Core.push([
           for (key in object) {
             key;
           }
-          return key === void 0 || hasOwn.call(object, key);
+          return key === void 0 || this.hasProp(object, key);
         }
       }, {
 

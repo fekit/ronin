@@ -140,7 +140,7 @@ storage.modules.Core.push [
 
         try
           # Not own constructor property must be Object
-          if object.constructor and not hasOwn.call(object, "constructor") and not hasOwn.call(object.constructor.prototype, "isPrototypeOf")
+          if object.constructor and not @hasProp(object, "constructor") and not @hasProp(object.constructor.prototype, "isPrototypeOf")
             return false
         catch error
             # IE8,9 will throw exceptions on certain host objects
@@ -148,7 +148,7 @@ storage.modules.Core.push [
 
         key for key of object
 
-        return key is undefined or hasOwn.call(object, key)
+        return key is undefined or @hasProp(object, key)
     },
     {
       ###
