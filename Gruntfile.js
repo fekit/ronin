@@ -32,6 +32,8 @@ module.exports = function( grunt ) {
               "<%= meta.coffee %>/functions.coffee",
               "<%= meta.core %>/global.coffee",
               "<%= meta.core %>/object.coffee",
+              "<%= meta.core %>/array.coffee",
+              "<%= meta.core %>/string.coffee",
               "<%= meta.coffee %>/bridge.coffee",
               "<%= meta.coffee %>/outro.coffee"],
         dest: "<%= meta.dest %>/<%= pkg.name %>.coffee"
