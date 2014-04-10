@@ -547,6 +547,57 @@ storage.modules.Core.push([
       {
 
         /*
+         * 别名
+         * 
+         * @method  alias
+         * @param   name {String}
+         * @return
+         */
+        name: "alias",
+        handler: function(name) {
+          if (this.isString(name)) {
+            if (window[name] === void 0) {
+              window[name] = this;
+            }
+          }
+          return window[String(name)];
+        }
+      }, {
+
+        /*
+         * 更改 LIB_CONFIG.name 以适应项目「本土化」
+         * 
+         * @method   mask
+         * @param    guise {String}    New name for library
+         * @return   {Boolean}
+         */
+        name: "mask",
+        handler: function(guise) {
+          var error, result;
+          if (this.hasProp(window, guise)) {
+            if (window.console) {
+              console.error("'" + guise + "' has existed as a property of Window object.");
+            }
+          } else {
+            window[guise] = window[LIB_CONFIG.name];
+            try {
+              result = delete window[LIB_CONFIG.name];
+            } catch (_error) {
+              error = _error;
+              window[LIB_CONFIG.name] = void 0;
+              result = true;
+            }
+            LIB_CONFIG.name = guise;
+          }
+          return result;
+        },
+        value: false,
+        validator: function(guise) {
+          return this.isString(guise);
+        }
+      }, {
+
+        /*
          * Returns the namespace specified and creates it if it doesn't exist.
          * Be careful when naming packages.
          * Reserved words may work in some browsers and not others.
