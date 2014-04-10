@@ -42,6 +42,58 @@ storage.modules.Core.push [
   handlers: [
     {
       ###
+      # 别名
+      # 
+      # @method  alias
+      # @param   name {String}
+      # @return
+      ###
+      name: "alias"
+      
+      handler: ( name ) ->
+        # 通过 _alias 判断是否已经设置过别名
+        # 设置别名时要将原来的别名释放
+        # 如果设置别名了，是否将原名所占的空间清除？（需要征求别人意见）
+
+        if @isString name
+          window[name] = this if window[name] is undefined
+
+        return window[String(name)]
+    },
+    {
+      ###
+      # 更改 LIB_CONFIG.name 以适应项目「本土化」
+      # 
+      # @method   mask
+      # @param    guise {String}    New name for library
+      # @return   {Boolean}
+      ###
+      name: "mask"
+
+      handler: ( guise ) ->
+        if @hasProp window, guise
+          console.error "'#{guise}' has existed as a property of Window object." if window.console
+        else
+          window[guise] = window[LIB_CONFIG.name]
+
+          # IE9- 不能用 delete 关键字删除 window 的属性
+          try
+            result = delete window[LIB_CONFIG.name]
+          catch error
+            window[LIB_CONFIG.name] = undefined
+            result = true
+          
+          LIB_CONFIG.name = guise
+
+        return result
+
+      value: false
+
+      validator: ( guise ) ->
+        return @isString guise
+    },
+    {
+      ###
       # Returns the namespace specified and creates it if it doesn't exist.
       # Be careful when naming packages.
       # Reserved words may work in some browsers and not others.
@@ -136,26 +188,6 @@ storage.modules.Core.push [
     }
   ]
 ]
-    # /**
-    #  * 别名
-    #  * 
-    #  * @method  alias
-    #  * @param   name {String}
-    #  * @return
-    #  */
-    # /*alias: function( name ) {
-    #     // 通过 _alias 判断是否已经设置过别名
-    #     // 设置别名时要将原来的别名释放
-    #     // 如果设置别名了，是否将原名所占的空间清除？（需要征求别人意见）
-
-    #     if ( this.type( name ) === "string" ) {
-    #         if ( window[name] === undefined ) {
-    #             window[name] = this;
-    #         }
-    #     }
-
-    #     return window[ String(name) ];
-    # },*/
 
     # /**
     #  * 恢复原名
