@@ -5,7 +5,7 @@
   "license": "MIT",
   "ignore": ["**/*", "!dest/**/*"],
   "devDependencies": {
-    "miso": "https://github.com/ourai/miso.git"
+    "miso": "https://github.com/ourai/miso.git#0.3.0"
   },
   "keywords": [
     "javascript",
