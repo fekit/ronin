@@ -35,7 +35,7 @@ compareObjects = ( base, target, strict, connate ) ->
 
   return result
 
-storage.modules.Core.push [
+storage.modules.Core.Global =
   validator: ->
     return true
 
@@ -188,7 +188,6 @@ storage.modules.Core.push [
         return min + Math.floor Math.random() * (max - min + 1)
     }
   ]
-]
 
     # /**
     #  * 恢复原名

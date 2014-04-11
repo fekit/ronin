@@ -1,4 +1,4 @@
-storage.modules.Core.push [
+storage.modules.Core.Object =
   validator: ->
     return true
 
@@ -36,4 +36,3 @@ storage.modules.Core.push [
       value: []
     }
   ]
-]

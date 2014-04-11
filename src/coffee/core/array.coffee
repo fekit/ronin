@@ -1,10 +1,6 @@
-###
+# ====================
 # Array
-# 
-# Developed by Ourai Lin, http://ourai.ws/
-# 
-# Copyright (c) 2013 JavaScript Revolution
-###
+# ====================
 
 ###
 # Determine whether an object is an array.
@@ -153,7 +149,7 @@ filterElement = ( target, callback, context, method, func ) ->
 
   return result
 
-storage.modules.Core.push [
+storage.modules.Core.Array =
   value: []
 
   validator: ( object ) ->
@@ -550,4 +546,3 @@ storage.modules.Core.push [
         return true
     }
   ]
-]

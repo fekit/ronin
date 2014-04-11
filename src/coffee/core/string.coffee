@@ -1,10 +1,6 @@
-###
+# ====================
 # String
-# 
-# Developed by Ourai Lin, http://ourai.ws/
-# 
-# Copyright (c) 2013 JavaScript Revolution
-###
+# ====================
 
 ###
 # Ignore specified strings.
@@ -63,7 +59,7 @@ utf8_to_base64 = ( string ) ->
 
   return result
 
-storage.modules.Core.push [
+storage.modules.Core.String =
   value: ""
 
   validator: ( object ) ->
@@ -286,7 +282,6 @@ storage.modules.Core.push [
       value: null
     }
   ]
-]
     # /**
     #  * 将字符串转换为以 \u 开头的十六进制 Unicode
     #  * 
