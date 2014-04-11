@@ -74,16 +74,17 @@ storage.modules.Core.push [
         if @hasProp window, guise
           console.error "'#{guise}' has existed as a property of Window object." if window.console
         else
-          window[guise] = window[LIB_CONFIG.name]
+          lib_name = @__meta__.name
+          window[guise] = window[lib_name]
 
           # IE9- 不能用 delete 关键字删除 window 的属性
           try
-            result = delete window[LIB_CONFIG.name]
+            result = delete window[lib_name]
           catch error
-            window[LIB_CONFIG.name] = undefined
+            window[lib_name] = undefined
             result = true
           
-          LIB_CONFIG.name = guise
+          @__meta__.name = guise
 
         return result
 

@@ -9,3 +9,6 @@ storage.modules.Core.push [
 _H = ->
 
 new Miso storage.modules.Core, _H
+
+_H.mixin
+  __meta__: LIB_CONFIG
