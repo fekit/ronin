@@ -1155,15 +1155,8 @@ storage.modules.Core.String = {
 
 _H = Miso(storage.modules.Core);
 
-if (_H.hasProp(Object, "defineProperty")) {
-  Object.defineProperty(_H, "__meta__", {
-    __proto__: null,
-    value: LIB_CONFIG
-  });
-} else {
-  _H.mixin({
-    __meta__: LIB_CONFIG
-  });
-}
+_H.mixin({
+  __meta__: LIB_CONFIG
+});
 
 window[LIB_CONFIG.name] = _H;
