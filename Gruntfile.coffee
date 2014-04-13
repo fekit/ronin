@@ -6,10 +6,10 @@ module.exports = ( grunt ) ->
   npmTasks = [
       "grunt-contrib-coffee"
       "grunt-contrib-uglify"
-      "grunt-contrib-jasmine"
       "grunt-contrib-concat"
       "grunt-contrib-clean"
       "grunt-contrib-copy"
+      "grunt-contrib-jasmine"
     ]
 
   grunt.initConfig
@@ -74,9 +74,9 @@ module.exports = ( grunt ) ->
         dest: "<%= meta.tests %>"
     jasmine:
       test:
-        src: "<%= meta.tests %>/ronin.js"
+        src: "<%= meta.tests %>/<%= pkg.name %>.js"
         options:
-          specs: "<%= meta.tests %>/specs/*Spec.js"
+          specs: "<%= meta.tests %>/*Spec.js"
 
   grunt.loadNpmTasks task for task in npmTasks
 
