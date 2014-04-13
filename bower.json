@@ -1,6 +1,6 @@
 {
   "name": "ronin",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": ["dest/ronin.min.js"],
   "license": "MIT",
   "ignore": ["**/*", "!dest/**/*"],
