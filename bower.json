@@ -1,11 +1,11 @@
 {
   "name": "ronin",
   "version": "0.2.1",
-  "main": ["dest/ronin.min.js", "dest/ronin.min.css"],
+  "main": ["dest/ronin.min.js"],
   "license": "MIT",
   "ignore": ["**/*", "!dest/**/*"],
   "devDependencies": {
-    "miso": "https://github.com/ourai/miso.git#0.3.0"
+    "miso": "https://github.com/ourai/miso.git#0.3.1"
   },
   "keywords": [
     "javascript",

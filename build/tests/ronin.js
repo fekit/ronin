@@ -94,11 +94,11 @@ defineProp = function(target) {
 batch = function(handlers, data, host) {
   var methods;
   methods = storage.methods;
-  if (methods.isArray(data)) {
+  if (methods.isArray(data) || (methods.isPlainObject(data) && !methods.isArray(data.handlers))) {
     methods.each(data, function(d) {
       return batch(d != null ? d.handlers : void 0, d, host);
     });
-  } else if (methods.isObject(data)) {
+  } else if (methods.isPlainObject(data) && methods.isArray(data.handlers)) {
     methods.each(handlers, function(info) {
       return attach(info, data, host);
     });
@@ -409,7 +409,7 @@ window[LIB_CONFIG.name] = _H;
 }(typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
 
 "use strict";
-var LIB_CONFIG, NAMESPACE_EXP, compareObjects, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, toString, unicode, utf8_to_base64;
+var LIB_CONFIG, NAMESPACE_EXP, compareObjects, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, toString, unicode, utf8_to_base64, _H;
 
 LIB_CONFIG = {
   name: "Ronin",
@@ -1562,6 +1562,19 @@ storage.modules.Core.String = {
     }
   ]
 };
+
+_H = Miso(storage.modules.Core);
+
+if (_H.hasProp(Object, "defineProperty")) {
+  Object.defineProperty(_H, "__meta__", {
+    __proto__: null,
+    value: LIB_CONFIG
+  });
+} else {
+  _H.mixin({
+    __meta__: LIB_CONFIG
+  });
+}
 
 window[LIB_CONFIG.name] = _H;
 

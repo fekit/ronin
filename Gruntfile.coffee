@@ -19,6 +19,7 @@ module.exports = ( grunt ) ->
       core: "<%= meta.coffee %>/core"
       dest: "dest"
       vendors: "vendors"
+      miso: "<%= meta.vendors %>/miso/dest"
       build: "build"
       tests: "<%= meta.build %>/tests"
       tasks: "<%= meta.build %>/tasks"
@@ -42,7 +43,7 @@ module.exports = ( grunt ) ->
             return src.replace /@(NAME|VERSION)/g, ( text, key ) ->
               return info[key.toLowerCase()]
         src: [
-            "<%= meta.vendors %>/miso/dest/miso.js"
+            "<%= meta.miso %>/miso.js"
             "<%= meta.src %>/intro.js"
             "<%= meta.src %>/<%= pkg.name %>.js"
             "<%= meta.src %>/outro.js"
