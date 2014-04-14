@@ -20,7 +20,7 @@ var LIB_CONFIG, attach, batch, defineProp, hasOwnProp, settings, storage, toStri
 
 LIB_CONFIG = {
   name: "Miso",
-  version: "0.3.0"
+  version: "0.3.2"
 };
 
 toString = {}.toString;
@@ -65,14 +65,19 @@ hasOwnProp = function(obj, prop) {
  */
 
 defineProp = function(target) {
-  var prop, value;
+  var error, prop, value;
   prop = "__" + (LIB_CONFIG.name.toLowerCase()) + "__";
   value = true;
   if (hasOwnProp(Object, "defineProperty")) {
-    Object.defineProperty(target, prop, {
-      __proto__: null,
-      value: value
-    });
+    try {
+      Object.defineProperty(target, prop, {
+        __proto__: null,
+        value: value
+      });
+    } catch (_error) {
+      error = _error;
+      target[prop] = value;
+    }
   } else {
     target[prop] = value;
   }
@@ -409,7 +414,7 @@ window[LIB_CONFIG.name] = _H;
 }(typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
 
 "use strict";
-var LIB_CONFIG, NAMESPACE_EXP, compareObjects, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, toString, unicode, utf8_to_base64, _H;
+var LIB_CONFIG, NAMESPACE_EXP, compareObjects, error, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, toString, unicode, utf8_to_base64, _H;
 
 LIB_CONFIG = {
   name: "Ronin",
@@ -1566,11 +1571,18 @@ storage.modules.Core.String = {
 _H = Miso(storage.modules.Core);
 
 if (_H.hasProp(Object, "defineProperty")) {
-  Object.defineProperty(_H, "__meta__", {
-    __proto__: null,
-    writable: true,
-    value: LIB_CONFIG
-  });
+  try {
+    Object.defineProperty(_H, "__meta__", {
+      __proto__: null,
+      writable: true,
+      value: LIB_CONFIG
+    });
+  } catch (_error) {
+    error = _error;
+    _H.mixin({
+      __meta__: LIB_CONFIG
+    });
+  }
 } else {
   _H.mixin({
     __meta__: LIB_CONFIG

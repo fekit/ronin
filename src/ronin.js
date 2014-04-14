@@ -1,5 +1,5 @@
 "use strict";
-var LIB_CONFIG, NAMESPACE_EXP, compareObjects, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, toString, unicode, utf8_to_base64, _H;
+var LIB_CONFIG, NAMESPACE_EXP, compareObjects, error, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, toString, unicode, utf8_to_base64, _H;
 
 LIB_CONFIG = {
   name: "@NAME",
@@ -1156,11 +1156,18 @@ storage.modules.Core.String = {
 _H = Miso(storage.modules.Core);
 
 if (_H.hasProp(Object, "defineProperty")) {
-  Object.defineProperty(_H, "__meta__", {
-    __proto__: null,
-    writable: true,
-    value: LIB_CONFIG
-  });
+  try {
+    Object.defineProperty(_H, "__meta__", {
+      __proto__: null,
+      writable: true,
+      value: LIB_CONFIG
+    });
+  } catch (_error) {
+    error = _error;
+    _H.mixin({
+      __meta__: LIB_CONFIG
+    });
+  }
 } else {
   _H.mixin({
     __meta__: LIB_CONFIG
