@@ -1155,20 +1155,14 @@ storage.modules.Core.String = {
 
 _H = Miso(storage.modules.Core);
 
-if (_H.hasProp(Object, "defineProperty")) {
-  try {
-    Object.defineProperty(_H, "__meta__", {
-      __proto__: null,
-      writable: true,
-      value: LIB_CONFIG
-    });
-  } catch (_error) {
-    error = _error;
-    _H.mixin({
-      __meta__: LIB_CONFIG
-    });
-  }
-} else {
+try {
+  Object.defineProperty(_H, "__meta__", {
+    __proto__: null,
+    writable: true,
+    value: LIB_CONFIG
+  });
+} catch (_error) {
+  error = _error;
   _H.mixin({
     __meta__: LIB_CONFIG
   });
