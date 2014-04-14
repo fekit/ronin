@@ -425,7 +425,7 @@ var LIB_CONFIG, NAMESPACE_EXP, compareObjects, error, filterElement, flattenArra
 
 LIB_CONFIG = {
   name: "Ronin",
-  version: "0.2.2"
+  version: "0.2.3"
 };
 
 toString = {}.toString;
