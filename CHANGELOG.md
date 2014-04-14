@@ -1,6 +1,6 @@
 # Rōnin CHANGELOG
 
-## 0.2.2 (2014-04-14)
+## 0.2.3 (2014-04-14)
 
 引入 [Miso](https://github.com/ourai/miso) v0.3.2，修复 `Object.defineProperty` 引起的异常。
 
