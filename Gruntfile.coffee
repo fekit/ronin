@@ -35,6 +35,7 @@ module.exports = ( grunt ) ->
             "<%= meta.core %>/object.coffee"
             "<%= meta.core %>/array.coffee"
             "<%= meta.core %>/string.coffee"
+            "<%= meta.core %>/date.coffee"
             "<%= meta.coffee %>/outro.coffee"
           ]
         dest: "<%= meta.dest %>/<%= pkg.name %>.coffee"
