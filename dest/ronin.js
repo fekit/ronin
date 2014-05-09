@@ -126,7 +126,11 @@ attach = function(set, data, host) {
   if (!methods.isFunction(host[name])) {
     handler = set.handler;
     value = hasOwnProp(set, "value") ? set.value : data.value;
-    validators = [set.validator, data.validator, settings.validator, function() {}];
+    validators = [
+      set.validator, data.validator, settings.validator, function() {
+        return true;
+      }
+    ];
     for (_i = 0, _len = validators.length; _i < _len; _i++) {
       validator = validators[_i];
       if (methods.isFunction(validator)) {
@@ -421,7 +425,7 @@ window[LIB_CONFIG.name] = _H;
 }(typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
 
 "use strict";
-var ISOstr2date, LIB_CONFIG, NAMESPACE_EXP, compareObjects, dateFormats, error, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, toString, unicode, utf8_to_base64, _H;
+var ISOstr2date, LIB_CONFIG, NAMESPACE_EXP, UTCstr2date, compareObjects, error, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, timezoneOffset, toString, unicode, utf8_to_base64, _H;
 
 LIB_CONFIG = {
   name: "Ronin",
@@ -435,7 +439,7 @@ NAMESPACE_EXP = /^[0-9A-Z_.]+[^_.]?$/i;
 storage = {
   regexps: {
     date: {
-      iso8601: [/^(\d{4})(?:\-(\d{2})(?:\-(\d{2}))?)?(?:T(\d{2})\:(\d{2})\:(\d{2})(\.\d{3})?(Z|[+-]\d{2}\:\d{2})?)?$/]
+      iso8601: /^(\d{4})\-(\d{2})\-(\d{2})(?:T(\d{2})\:(\d{2})\:(\d{2})(?:\.)(\d{3})?(Z|[+-]\d{2}\:\d{2})?)?$/
     }
   },
   modules: {
@@ -444,9 +448,6 @@ storage = {
 };
 
 storage.modules.Core.BuiltIn = {
-  validator: function() {
-    return true;
-  },
   handlers: (function() {
     var _results;
     _results = [];
@@ -507,9 +508,6 @@ compareObjects = function(base, target, strict, connate) {
 };
 
 storage.modules.Core.Global = {
-  validator: function() {
-    return true;
-  },
   handlers: [
     {
 
@@ -662,9 +660,6 @@ storage.modules.Core.Global = {
 };
 
 storage.modules.Core.Object = {
-  validator: function() {
-    return true;
-  },
   handlers: [
     {
 
@@ -1582,54 +1577,75 @@ storage.modules.Core.String = {
 
 
 /*
- * 判断是否为日期对象或日期格式的字符串
- *
- * @private
- * @method   dateFormats
- * @return   {Boolean}
- */
-
-dateFormats = function(format) {
-  var result;
-  result = this.isDate(date);
-  if (!result && this.isString(date)) {
-    result = false;
-  }
-  return result;
-};
-
-
-/*
  * ISO 8601 日期字符串转化为日期对象
  *
  * @private
  * @method   ISOstr2date
  * @param    date_parts {Array}
- * @return   {Boolean}
+ * @return   {Date}
  */
 
 ISOstr2date = function(date_parts) {
-  var date, handlers;
-  date_parts = this.filter(date_parts, function(ele) {
-    return (ele != null) && ele !== "";
-  });
+  var date, tz_offset;
   date_parts.shift();
+  date = UTCstr2date.call(this, date_parts);
+  tz_offset = timezoneOffset(date_parts.slice(-1)[0]);
+  if (tz_offset !== 0) {
+    date.setTime(date.getTime() - tz_offset);
+  }
+  return date;
+};
+
+
+/*
+ * 转化为 UTC 日期对象
+ *
+ * @private
+ * @method   UTCstr2date
+ * @param    date_parts {Array}
+ * @return   {Date}
+ */
+
+UTCstr2date = function(date_parts) {
+  var date, handlers;
   handlers = ["FullYear", "Month", "Date", "Hours", "Minutes", "Seconds", "Milliseconds"];
   date = new Date;
   this.each(date_parts, function(ele, i) {
-    var h, offset;
-    h = handlers[i];
-    offset = h === "Month" ? -1 : 0;
-    return date["set" + h](ele.replace(/[+-.]/, "") * 1 + offset);
+    var handler;
+    if ((ele != null) && ele !== "") {
+      handler = handlers[i];
+      if (handler != null) {
+        return date["setUTC" + handler](ele * 1 + (handler === "Month" ? -1 : 0));
+      }
+    }
   });
   return date;
 };
 
+
+/*
+ * 相对于 UTC 的偏移值
+ *
+ * @private
+ * @method   timezoneOffset
+ * @param    timezone {String}
+ * @return   {Integer}
+ */
+
+timezoneOffset = function(timezone) {
+  var cap, offset;
+  offset = 0;
+  if (/^(Z|[+-]\d{2}\:\d{2})$/.test(timezone)) {
+    cap = timezone.charAt(0);
+    if (cap !== "Z") {
+      offset = timezone.substring(1).split(":");
+      offset = (cap + (offset[0] * 60 + offset[1] * 1)) * 60 * 1000;
+    }
+  }
+  return offset;
+};
+
 storage.modules.Core.Date = {
-  value: new Date,
-  validator: function(object) {
-    return this.isDate(object);
-  },
   handlers: [
     {
 
@@ -1653,17 +1669,33 @@ storage.modules.Core.Date = {
         } else if (this.isString(date)) {
           date = this.trim(date);
           d = new Date(date);
-          m = String(date).match(storage.regexps.date.iso8601[0]);
+          m = String(date).match(storage.regexps.date.iso8601);
           if (isNaN(d.getTime())) {
             d = m != null ? ISOstr2date.call(this, m) : new Date;
           }
         }
         return d;
       },
-      validator: function(date) {
-        return true;
-      },
       value: new Date
+    }, {
+
+      /*
+       * 取得当前时间
+       *
+       * @method   now
+       * @param    [is_object] {Boolean}
+       * @return   {Integer/Date}
+       */
+      name: "now",
+      handler: function(is_object) {
+        var date;
+        date = new Date;
+        if (is_object === true) {
+          return date;
+        } else {
+          return date.getTime();
+        }
+      }
     }
   ]
 };

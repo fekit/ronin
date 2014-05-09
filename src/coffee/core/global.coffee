@@ -36,9 +36,6 @@ compareObjects = ( base, target, strict, connate ) ->
   return result
 
 storage.modules.Core.Global =
-  validator: ->
-    return true
-
   handlers: [
     {
       ###

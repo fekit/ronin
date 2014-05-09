@@ -1,7 +1,4 @@
 storage.modules.Core.Object =
-  validator: ->
-    return true
-
   handlers: [
     {
       ###
