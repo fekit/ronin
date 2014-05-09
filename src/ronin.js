@@ -1,5 +1,5 @@
 "use strict";
-var LIB_CONFIG, NAMESPACE_EXP, compareObjects, error, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, toString, unicode, utf8_to_base64, _H;
+var ISOstr2date, LIB_CONFIG, NAMESPACE_EXP, compareObjects, dateFormats, error, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, toString, unicode, utf8_to_base64, _H;
 
 LIB_CONFIG = {
   name: "@NAME",
@@ -11,6 +11,11 @@ toString = {}.toString;
 NAMESPACE_EXP = /^[0-9A-Z_.]+[^_.]?$/i;
 
 storage = {
+  regexps: {
+    date: {
+      iso8601: [/^(\d{4})(?:\-(\d{2})(?:\-(\d{2}))?)?(?:T(\d{2})\:(\d{2})\:(\d{2})(\.\d{3})?(Z|[+-]\d{2}\:\d{2})?)?$/]
+    }
+  },
   modules: {
     Core: {}
   }
@@ -1149,6 +1154,94 @@ storage.modules.Core.String = {
         return result;
       },
       value: null
+    }
+  ]
+};
+
+
+/*
+ * 判断是否为日期对象或日期格式的字符串
+ *
+ * @private
+ * @method   dateFormats
+ * @return   {Boolean}
+ */
+
+dateFormats = function(format) {
+  var result;
+  result = this.isDate(date);
+  if (!result && this.isString(date)) {
+    result = false;
+  }
+  return result;
+};
+
+
+/*
+ * ISO 8601 日期字符串转化为日期对象
+ *
+ * @private
+ * @method   ISOstr2date
+ * @param    date_parts {Array}
+ * @return   {Boolean}
+ */
+
+ISOstr2date = function(date_parts) {
+  var date, handlers;
+  date_parts = this.filter(date_parts, function(ele) {
+    return (ele != null) && ele !== "";
+  });
+  date_parts.shift();
+  handlers = ["FullYear", "Month", "Date", "Hours", "Minutes", "Seconds", "Milliseconds"];
+  date = new Date;
+  this.each(date_parts, function(ele, i) {
+    var h, offset;
+    h = handlers[i];
+    offset = h === "Month" ? -1 : 0;
+    return date["set" + h](ele.replace(/[+-.]/, "") * 1 + offset);
+  });
+  return date;
+};
+
+storage.modules.Core.Date = {
+  value: new Date,
+  validator: function(object) {
+    return this.isDate(object);
+  },
+  handlers: [
+    {
+
+      /*
+       * 格式化日期对象/字符串
+       *
+       * format 参照 PHP：
+       *   http://www.php.net/manual/en/function.date.php
+       * 
+       * @method  date
+       * @param   [date] {Date/String}
+       * @param   [format] {String}
+       * @return  {Date/String}
+       */
+      name: "date",
+      handler: function(date, format) {
+        var d, m, result;
+        result = null;
+        if (this.isDate(date)) {
+          d = date;
+        } else if (this.isString(date)) {
+          date = this.trim(date);
+          d = new Date(date);
+          m = String(date).match(storage.regexps.date.iso8601[0]);
+          if (isNaN(d.getTime())) {
+            d = m != null ? ISOstr2date.call(this, m) : new Date;
+          }
+        }
+        return d;
+      },
+      validator: function(date) {
+        return true;
+      },
+      value: new Date
     }
   ]
 };
