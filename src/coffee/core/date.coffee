@@ -3,34 +3,32 @@
 # ====================
 
 ###
-# 判断是否为日期对象或日期格式的字符串
-#
-# @private
-# @method   dateFormats
-# @return   {Boolean}
-###
-dateFormats = ( format ) ->
-  result = @isDate date
-
-  if not result and @isString date
-    result = false
-
-  return result
-
-###
 # ISO 8601 日期字符串转化为日期对象
 #
 # @private
 # @method   ISOstr2date
 # @param    date_parts {Array}
-# @return   {Boolean}
+# @return   {Date}
 ###
 ISOstr2date = ( date_parts ) ->
-  date_parts = @filter date_parts, ( ele ) ->
-    return ele? and ele isnt ""
-
   date_parts.shift()
 
+  date = UTCstr2date.call this, date_parts
+  tz_offset = timezoneOffset date_parts.slice(-1)[0]
+
+  date.setTime(date.getTime() - tz_offset) unless tz_offset is 0
+
+  return date
+
+###
+# 转化为 UTC 日期对象
+#
+# @private
+# @method   UTCstr2date
+# @param    date_parts {Array}
+# @return   {Date}
+###
+UTCstr2date = ( date_parts ) ->
   handlers = [
       "FullYear"
       "Month"
@@ -40,23 +38,37 @@ ISOstr2date = ( date_parts ) ->
       "Seconds"
       "Milliseconds"
     ]
-
   date = new Date
 
   @each date_parts, ( ele, i ) ->
-    h = handlers[i]
-    offset = if h is "Month" then -1 else 0
+    if ele? and ele isnt ""
+      handler = handlers[i]
 
-    date["set#{h}"] ele.replace(/[+-.]/, "") * 1 + offset
+      date["setUTC#{handler}"](ele * 1 + if handler is "Month" then -1 else 0) if handler?
 
   return date
 
+###
+# 相对于 UTC 的偏移值
+#
+# @private
+# @method   timezoneOffset
+# @param    timezone {String}
+# @return   {Integer}
+###
+timezoneOffset = ( timezone ) ->
+  offset = 0
+
+  if /^(Z|[+-]\d{2}\:\d{2})$/.test timezone
+    cap = timezone.charAt(0)
+
+    if cap isnt "Z"
+      offset = timezone.substring(1).split(":")
+      offset = (cap + (offset[0] * 60 + offset[1] * 1)) * 60 * 1000
+
+  return offset
+
 storage.modules.Core.Date =
-  value: new Date
-
-  validator: ( object ) ->
-    return @isDate object
-
   handlers: [
     {
       ###
@@ -80,7 +92,7 @@ storage.modules.Core.Date =
         else if @isString date
           date = @trim date
           d = new Date date
-          m = String(date).match storage.regexps.date.iso8601[0]
+          m = String(date).match storage.regexps.date.iso8601
 
           if isNaN d.getTime()
             # 为了兼容 IE9-
@@ -88,9 +100,21 @@ storage.modules.Core.Date =
 
         return d        
 
-      validator: ( date ) ->
-        return true
-
       value: new Date
+    },
+    {
+      ###
+      # 取得当前时间
+      #
+      # @method   now
+      # @param    [is_object] {Boolean}
+      # @return   {Integer/Date}
+      ###
+      name: "now"
+
+      handler: ( is_object ) ->
+        date = new Date
+
+        return if is_object is true then date else date.getTime()
     }
   ]
