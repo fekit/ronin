@@ -432,7 +432,7 @@ var DateTimeFormats, DateTimeNames, ISOstr2date, LIB_CONFIG, NAMESPACE_EXP, UTCs
 
 LIB_CONFIG = {
   name: "Ronin",
-  version: "0.2.3"
+  version: "0.2.4"
 };
 
 toString = {}.toString;

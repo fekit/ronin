@@ -1,8 +1,14 @@
 # Rōnin CHANGELOG
 
+## 0.2.4 (2014-05-11)
+
+1.  引入 [Miso v0.3.3](https://github.com/ourai/miso/tree/0.3.3)
+    默认 `validator` 返回 `true`
+2.  添加方法 `date` & `now`
+
 ## 0.2.3 (2014-04-14)
 
-引入 [Miso](https://github.com/ourai/miso) v0.3.2，修复 `Object.defineProperty` 引起的异常。
+引入 [Miso v0.3.2](https://github.com/ourai/miso/tree/0.3.2)，修复 `Object.defineProperty` 引起的异常。
 
 ## 0.2.2 (2014-04-13)
 
