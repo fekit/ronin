@@ -1,5 +1,6 @@
 "use strict";
-var ISOstr2date, LIB_CONFIG, NAMESPACE_EXP, UTCstr2date, compareObjects, error, filterElement, flattenArray, floatLength, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, timezoneOffset, toString, unicode, utf8_to_base64, _H;
+var DateTimeFormats, DateTimeNames, ISOstr2date, LIB_CONFIG, NAMESPACE_EXP, UTCstr2date, compareObjects, dateStr2obj, dtwz, error, filterElement, flattenArray, floatLength, formatDate, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, timezoneOffset, toString, unicode, utf8_to_base64, _H,
+  __slice = [].slice;
 
 LIB_CONFIG = {
   name: "@NAME",
@@ -13,7 +14,7 @@ NAMESPACE_EXP = /^[0-9A-Z_.]+[^_.]?$/i;
 storage = {
   regexps: {
     date: {
-      iso8601: /^(\d{4})\-(\d{2})\-(\d{2})(?:T(\d{2})\:(\d{2})\:(\d{2})(?:\.)(\d{3})?(Z|[+-]\d{2}\:\d{2})?)?$/
+      iso8601: /^(\d{4})\-(\d{2})\-(\d{2})(?:T(\d{2})\:(\d{2})\:(\d{2})(?:(?:\.)(\d{3}))?(Z|[+-]\d{2}\:\d{2})?)?$/
     }
   },
   modules: {
@@ -1151,6 +1152,27 @@ storage.modules.Core.String = {
 
 
 /*
+ * 将日期字符串转化为日期对象
+ *
+ * @private
+ * @method   dateStr2obj
+ * @param    date_str {String}
+ * @return   {Date}
+ */
+
+dateStr2obj = function(date_str) {
+  var date, date_parts;
+  date_str = this.trim(date_str);
+  date = new Date(date_str);
+  date_parts = date_str.match(storage.regexps.date.iso8601);
+  if (isNaN(date.getTime())) {
+    date = date_parts != null ? ISOstr2date.call(this, date_parts) : new Date;
+  }
+  return date;
+};
+
+
+/*
  * ISO 8601 日期字符串转化为日期对象
  *
  * @private
@@ -1219,6 +1241,167 @@ timezoneOffset = function(timezone) {
   return offset;
 };
 
+DateTimeNames = {
+  month: {
+    long: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    short: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  },
+  week: {
+    long: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thurday", "Friday", "Saturday"],
+    short: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  }
+};
+
+DateTimeFormats = {
+  "d": function(date) {
+    return dtwz.call(this, date.getDate());
+  },
+  "D": function(date) {
+    return DateTimeNames.week.short[date.getDay()];
+  },
+  "j": function(date) {
+    return date.getDate();
+  },
+  "l": function(date) {
+    return DateTimeNames.week.long[date.getDay()];
+  },
+  "N": function(date) {
+    var day;
+    day = date.getDay();
+    if (day === 0) {
+      day = 7;
+    }
+    return day;
+  },
+  "S": function(date) {
+    var suffix;
+    switch (String(date.getDate()).slice(-1)) {
+      case "1":
+        suffix = "st";
+        break;
+      case "2":
+        suffix = "nd";
+        break;
+      case "3":
+        suffix = "rd";
+        break;
+      default:
+        suffix = "th";
+    }
+    return suffix;
+  },
+  "w": function(date) {
+    return date.getDay();
+  },
+  "F": function(date) {
+    return DateTimeNames.month.long[date.getMonth()];
+  },
+  "m": function(date) {
+    return dtwz.call(this, DateTimeFormats.n.call(this, date));
+  },
+  "M": function(date) {
+    return DateTimeNames.month.short[date.getMonth()];
+  },
+  "n": function(date) {
+    return date.getMonth() + 1;
+  },
+  "Y": function(date) {
+    return date.getFullYear();
+  },
+  "y": function(date) {
+    return String(date.getFullYear()).slice(-2);
+  },
+  "a": function(date) {
+    var h;
+    h = date.getHours();
+    if ((0 < h && h < 12)) {
+      return "am";
+    } else {
+      return "pm";
+    }
+  },
+  "A": function(date) {
+    return DateTimeFormats.a.call(this, date).toUpperCase();
+  },
+  "g": function(date) {
+    var h;
+    h = date.getHours();
+    if (h === 0) {
+      h = 24;
+    }
+    if (h > 12) {
+      return h - 12;
+    } else {
+      return h;
+    }
+  },
+  "G": function(date) {
+    return date.getHours();
+  },
+  "h": function(date) {
+    return dtwz.call(this, DateTimeFormats.g.call(this, date));
+  },
+  "H": function(date) {
+    return dtwz.call(this, DateTimeFormats.G.call(this, date));
+  },
+  "i": function(date) {
+    return dtwz.call(this, date.getMinutes());
+  },
+  "s": function(date) {
+    return dtwz.call(this, date.getSeconds());
+  }
+};
+
+
+/*
+ * 添加前导“0”
+ *
+ * @private
+ * @method   dtwz
+ * @param    datetime {Integer}
+ * @return   {String}
+ */
+
+dtwz = function(datetime) {
+  return this.pad(datetime, -2, "0");
+};
+
+
+/*
+ * 格式化日期
+ *
+ * @private
+ * @method   formatDate
+ * @param    format {String}
+ * @param    date {Date}
+ * @return   {String}
+ */
+
+formatDate = function(format, date) {
+  var context, formatted;
+  if (!this.isDate(date) || isNaN(date.getTime())) {
+    date = new Date;
+  }
+  context = this;
+  formatted = format.replace(new RegExp("([a-z]|\\\\)", "gi"), function() {
+    var handler, m, o, p, s, _i;
+    m = arguments[0], p = 4 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 2) : (_i = 1, []), o = arguments[_i++], s = arguments[_i++];
+    if (m === "\\") {
+      return "";
+    } else {
+      if (s.charAt(o - 1) !== "\\") {
+        handler = DateTimeFormats[m];
+      }
+    }
+    if (handler != null) {
+      return handler.call(context, date);
+    } else {
+      return m;
+    }
+  });
+  return formatted;
+};
+
 storage.modules.Core.Date = {
   handlers: [
     {
@@ -1230,27 +1413,21 @@ storage.modules.Core.Date = {
        *   http://www.php.net/manual/en/function.date.php
        * 
        * @method  date
+       * @param   format {String}
        * @param   [date] {Date/String}
-       * @param   [format] {String}
-       * @return  {Date/String}
+       * @return  {String}
        */
       name: "date",
-      handler: function(date, format) {
-        var d, m, result;
-        result = null;
-        if (this.isDate(date)) {
-          d = date;
-        } else if (this.isString(date)) {
-          date = this.trim(date);
-          d = new Date(date);
-          m = String(date).match(storage.regexps.date.iso8601);
-          if (isNaN(d.getTime())) {
-            d = m != null ? ISOstr2date.call(this, m) : new Date;
-          }
+      handler: function(format, date) {
+        if (this.isString(date)) {
+          date = dateStr2obj.call(this, date);
         }
-        return d;
+        return formatDate.apply(this, [format, date]);
       },
-      value: new Date
+      value: "",
+      validator: function(format) {
+        return this.isString(format);
+      }
     }, {
 
       /*
