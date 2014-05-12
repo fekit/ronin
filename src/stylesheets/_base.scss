@@ -1,0 +1,60 @@
+body {
+  font-size: 14px;
+  line-height: $line_height;
+  background: #F5F5F5 url("../images/header-background.png");
+}
+
+a {
+  &:link,
+  &:visited {
+    color: #758694;
+    text-decoration: none;
+  }
+
+  &:hover {
+    color: $color-text-light;
+    text-decoration: underline;
+  }
+}
+
+code {
+  background-color: #FFF;
+}
+
+pre {
+  @include block_content;
+
+  code {
+    background: none;
+  }
+}
+
+blockquote {
+  position: relative;
+  margin: 0;
+  padding: 20px 0 10px 60px;
+  font-size: 1.15em;
+  color: $color-text-light;
+
+  &:before {
+    content: "\201C";
+    position: absolute;
+    top: 0;
+    left: 10px;
+    z-index: -1;
+    font: {
+      family: Monaco,Consolas, "Lucida Console", monospace, "Courier New", Courier, serif;
+      size: 5em;
+    }
+    line-height: 1;
+    color: #A6A6A6;
+  }
+}
+
+[lang="zh-CN"] {
+  font-family: $font_family-hei;
+}
+
+[lang="en"] {
+  font-family: $font_family;
+}

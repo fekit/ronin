@@ -1,0 +1,26 @@
+@import "layouts/frameset";
+
+@include layout-frameset(250px);
+
+.layout--frameset {
+  .layout-main,
+  .layout-sub {
+    @include box-sizing(border-box);
+  }
+
+  .layout-main {
+    padding: 30px 25px;
+  }
+
+  .layout-sub {
+    background-color: #F9F9F9;
+    border-right: 1px solid #CCC;
+    box-shadow: 0 0 20px #CCC;
+    padding: 15px 0 30px 30px;
+  }
+
+  .layout-content {
+    max-width: 600px;
+    overflow: hidden;
+  }
+}

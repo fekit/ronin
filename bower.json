@@ -1,0 +1,9 @@
+{
+  "name": "Rōnin",
+  "version": "0.0.0",
+  "dependencies": {
+    "jquery": "https://github.com/jquery/jquery.git#1.8.3",
+    "html5shiv": "https://github.com/aFarkas/html5shiv.git#3.7.1",
+    "matcha": "https://github.com/ourai/matcha"
+  }
+}

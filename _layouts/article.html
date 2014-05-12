@@ -1,0 +1,55 @@
+---
+layout_type: sandwich
+css:
+  - highlight
+  - pages/article
+---
+
+{% include intro.html %}
+{% include header.html %}
+  <main class="layout-container">
+    <div class="layout-content layout-inner">
+      <article class="article" itemscope itemtype="http://schema.org/Article">
+        <header class="article-header">
+          <div class="article-title">
+            <h1 itemprop="name">{{ page.title }}</h1>
+          </div>
+          <!-- Article's meta info -->
+          <div class="article-meta">
+            <time datetime="{{ page.date | date: '%Y-%m-%d' }}" itemprop="datePublished">{{ page.date | date: "%b %-d, %Y" }}</time>{% if page.updated %} (updated at <time datetime="{{ page.updated | date: '%Y-%m-%d' }}">{{ page.updated | date: "%b %-d, %Y" }}</time>){% endif %} {% for tag in page.tags %}{{ tag }}{% if forloop.rindex != 1 %} | {% endif %}{% endfor %}
+          </div>
+        </header>
+        <div class="article-body" itemprop="articleBody">{{ content }}</div>
+        <footer class="article-footer">
+          <div class="article-switcher">
+            {% assign prev = page.previous %}
+            {% assign next = page.next %}
+            {% if prev %}
+              <a href="{{ prev.url }}" class="prev_article" title="{{ prev.title }}">{{ prev.title }}</a>
+            {% else %}
+              <span class="prev_article">&nbsp;</span>
+            {% endif %}
+            {% if next %}
+              <a href="{{ next.url }}" class="next_article" title="{{ next.title }}">{{ next.title }}</a>
+            {% else %}
+              <span class="next_article">&nbsp;</span>
+            {% endif %}
+          </div>
+          {% assign related = site.related_posts %}
+          {% if related.size > 0 %}
+            <!-- Related articles -->
+            <ul class="related_articles">
+              {% for post in related %}
+                <li><a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a></li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </footer>
+      </article>
+      {% if page.comments %}
+        {% include disqus.html %}
+      {% endif %}
+    </div>
+  </main>
+{% include footer.html %}
+{% include outro.html %}

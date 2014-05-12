@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="{{ site.data.info.lang }}" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.data.info.title.zh }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if page.keywords %}
+      {% assign keywords = page.keywords %}
+    {% else %}
+      {% assign keywords = site.data.info.keywords %}
+    {% endif %}
+    {% unless keywords == null or keywords == blank %}
+      <meta name="keywords" content="{{ keywords }}">
+    {% endunless %}
+    {% if page.description %}
+      {% assign description = page.description %}
+    {% else %}
+      {% assign description = site.data.info.description %}
+    {% endif %}
+    {% unless description == null or description == blank %}
+      <meta name="description" content="{{ description | strip_html }}">
+    {% endunless %}
+    <link rel="author" href="{{ site.data.author.link }}">
+    <link rel="shortcut icon" href="{{ site.data.url.root | append: '/' | append: site.data.url.img }}/favicon.ico">
+    {% assign css_url = site.data.url.root | append: "/" | append: site.data.url.css %}
+    <link rel="stylesheet" href="{{ css_url }}/matcha.min.css">
+    <link rel="stylesheet" href="{{ css_url }}/site.css">
+    {% if page.css %}
+      {% for css in page.css %}
+    <link rel="stylesheet" href="{{ css_url | append: '/' | append: css }}.css">
+      {% endfor %}
+    {% endif %}
+    {% assign js_url = site.data.url.root | append: "/" | append: site.data.url.js %}
+    <!--[if lt IE 9]>
+    <script src="{{ js_url }}/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+    <script src="{{ js_url }}/jquery.min.js"></script>
+  </head>
+  {% assign page_t = page.template %}
+  {% if page_t == null or page_t == blank %}{% assign page_t = "none" %}{% endif %}
+  {% assign page_c = page.page_category %}
+  {% if page_c == null or page_c == blank %}{% assign page_c = "none" %}{% endif %}
+  <body itemscope itemtype="http://schema.org/WebPage" class="layout--{{ page.layout_type }}" data-layout="{{ page_t }}" data-page="{{ page_c }}">

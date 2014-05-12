@@ -1,13 +1,12 @@
 ---
-layout: default
----
+layout: doc
+layout_type: frameset
 
-<h1>JavaScript</h1>
-<p><span>is so poor that it needs a </span><strong>REVOLUTION</strong><span>!!!</span></p>
-<ul class="n-rst">
-{% for page in site.pages %}
-	{% if page.title %}
-	<li><a href="{{ page.url }}">{{ page.title }}</a></li>
-	{% endif %}
-{% endfor %}
-</ul>
+css:
+  - pages/home
+---
+<header>
+  <h1>浪人</h1>
+</header>
+<p>本项目（Code name: Revolution）是一个 JavaScript 解决方案、增强库，旨在解决原生 JavaScript 函数/方法所无法处理的事情，让 JavaScript 开发者们编写功能模块时少写些代码、更加得心应手！</p>
+<p><img src="{{ site.data.url.root }}/{{ site.data.url.img }}/jsr.png" alt="JavaScript Revolution"></p>

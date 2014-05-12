@@ -1,0 +1,94 @@
+@CHARSET "UTF-8";
+
+
+
+/* --- Basic Elements --- */
+
+html, body { min-width: 800px; }
+body { font-size: 14px; background-color: #EEE; }
+a:link, a:visited { text-decoration: none; color: #758694; outline: none; }
+a:hover { color: #888; }
+
+
+
+/* --- Basic Classes --- */
+
+.catalog {
+	width: 200px;
+	position: fixed; top: 0; bottom: 0; left: 0;
+	overflow-x: hidden; overflow-y: auto;
+	background-color: #F9F9F9;
+	border-right: 1px solid #CCC;
+	box-shadow: 0 0 20px #CCC;
+	font: 0.9em "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
+	padding: 15px 0 30px 30px;
+}
+
+.log_title:link, .log_title:visited, .log_title:hover { display: block; font-size: 14px; color: #333; font-weight: bold; text-decoration: underline; margin-top: 15px; }
+.log_section { font-size: 12px; margin: 5px 0 0; }
+.log_section a:link, .log_section a:visited { color: #333; }
+.log_section a:hover { color: #666; text-decoration: underline; }
+
+.page { max-width: 800px; margin: 40px 20px 50px 265px; }
+.page h2 {
+	padding-top: 20px;
+	font-family: 'Times New Roman', Serif; font-style: italic;
+	border-bottom: 1px dashed #A6A6A6;
+	text-shadow: 1px 1px #F5F5F5, 2px 2px #C0C0C0;
+}
+.page h2 .symbol { font-style: normal; margin-right: 10px; }
+.page code { background-color: #FFF; border: 1px solid #CCC; }
+.page p { margin: 5px 0; }
+.page p.first { text-indent: 0; }
+.page p.first strong { margin-right: 20px; }
+.page blockquote {
+	padding: 15px; margin-bottom: 30px;
+	background: url("../image/bg-content-kai.png") repeat;
+	border: 1px solid #A6A6A6; border-width: 1px 0 0 1px; border-radius: 5px;
+	*border-width: 1px; *border-color: #BBB #FFF #FFF #BBB;
+	box-shadow: 0 1px 2px #FFF, 0 0 0.5em -0.2em #666 inset;
+/*	text-shadow: 0 1px #F5F5F5, 0 0 15px #FFF;*/
+	overflow: hidden;
+	font-family: Simsun, "Hiragino Sans GB", sans-serif;
+}
+.page blockquote ol { list-style-position: outside; }
+.page blockquote li { margin: 3px 0; }
+.page .statement { font-family: Georgia, Serif; line-height: 1.8; margin-bottom: 50px; }
+.page .statement dt { font-size: 1.3em; margin-bottom: 10px; }
+.page .statement dd { margin-bottom: 20px; }
+
+.separator { border-width: 0; border-top: 1px dashed #BFBFBF; border-bottom: 1px dashed #FFF; margin: 10px 0; }
+
+.doc_title {
+	font-size: 38px; font-family: Georgia, Sans-serif;
+	text-align: left; text-shadow: 0 1px #F5F5F5, 0 0 5px #FFF;
+	border-left: 10px solid #0871AB;
+	padding-left: 15px; margin-bottom: 30px;
+	overflow: hidden;
+}
+
+
+
+#changelog {
+	border: 1px solid #C5CACE; border-radius: 5px;
+	background-color: #F9F9F9;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1) inset, 0 1px 0 #FFF;
+	padding: 15px;
+	font-size: 13px;
+}
+#changelog b { font-family: "Palatino Linotype", Palatino, Georgia, serif; }
+#changelog ul { list-style: circle outside none; padding-left: 15px; margin: 10px 0 25px; line-height: 1.8; }
+#changelog ul.last { margin-bottom: 0; }
+
+
+
+#total {
+	position: absolute; right: 30px; bottom: 20px; left: 0;
+	border: 1px solid #BEBEBE; border-left: none; border-radius: 0 5px 5px 0;
+	background-color: #DFE3E6;
+	padding: 5px 15px 5px 30px;
+	font-size: 12px; font-family: "Palatino Linotype", Palatino, Georgia, serif;
+	text-shadow: 0 1px #FFF, 0 0 5px #F5F5F5; line-height: 1.7;
+}
+#total b { margin: 0 3px; }
+#content { max-width: none; margin-right: 100px; }

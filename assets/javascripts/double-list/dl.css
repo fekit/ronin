@@ -1,0 +1,82 @@
+@charset "UTF-8";
+
+
+
+/* --- Frame --- */
+
+.DL-doublelist {
+    overflow: hidden;
+    position: relative;
+    padding: 10px;
+    font: 14px/1.5 Verdana;
+    -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; user-select: none;
+}
+
+.DL-wrapper[data-flag="alternative"] { position: absolute; }
+.DL-wrapper[data-flag="selected"] { float: right; }
+
+.DL-content {
+    width: 200px; height: 300px;
+    border: 1px solid #B1B1B1;
+    padding: 2px;
+    overflow: auto;
+    cursor: default;
+}
+
+.DL-wrapper button { padding: 0; margin: 0; }
+
+
+
+/* --- List --- */
+
+.DL-list { display: none; list-style: none outside none; }
+.DL-content > .DL-list,
+.DL-expanded > .DL-list { display: block; }
+
+.DL-node { height: 24px; position: relative; overflow: hidden; }
+.DL-node:hover { background-color: #FDF3DA; }
+.DL-item.DL-selected > .DL-node { background-color: #F0F0ED !important; }
+.DL-haschildren > .DL-list > .DL-item > .DL-node { padding-left: 24px; }
+
+
+
+/* --- Node --- */
+
+.DL-trigger,
+.DL-operation { width: 24px; }
+
+.DL-trigger { display: none; float: left; height: 24px; font: 0/0 a !important; border-style: none; background: no-repeat 50% 50%; }
+.DL-collapsed > .DL-node > .DL-trigger { display: block; background-image: url("/assets/common/jquery-based/double-list/icon_expand.png"); }
+.DL-expanded > .DL-node > .DL-trigger { display: block; background-image: url("/assets/common/jquery-based/double-list/icon_collapse.png"); }
+
+.DL-operation { display: none; float: right; height: 100%; background-color: #FDE28D; }
+.DL-node:hover > .DL-operation { display: block; }
+.DL-operation button {
+    width: 14px; height: 14px;
+    font: 12px/14px "Microsoft Yahei", "Hiragino Sans GB", Tahoma, Verdana, "BitStream vera Sans", Arial, Helvetica, Sans-serif;
+    border: 1px solid transparent;
+    background-color: transparent;
+    color: #D7A300;
+    cursor: pointer;
+    margin: 5px 0 0 5px;
+}
+.DL-operation button:hover { border-color: #D7A300; background-color: #FDF3DA; }
+
+.DL-info { height: 20px; line-height: 20px; padding: 2px 0; }
+.DL-info > * { vertical-align: top; }
+.DL-icon { width: 20px; height: 20px; margin-right: 3px; }
+
+
+
+/* --- Tile view --- */
+
+.DL-view-tile { height: 36px; }
+.DL-view-tile .DL-icon { width: 32px; height: 32px; float: left; }
+.DL-view-tile .DL-info { height: 32px; }
+.DL-view-tile .DL-text,
+.DL-view-tile .DL-extra {
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}

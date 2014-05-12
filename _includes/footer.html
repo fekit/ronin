@@ -1,0 +1,45 @@
+<footer class="layout-footer">
+  <div class="layout-inner">
+    <div class="footer-links">
+      <!-- Internal links -->
+      <div class="internal">
+        <b>内部通道</b>
+        <ul>
+          <li><a href="{{ site.data.url.about }}">关于本站</a></li>
+          <li><a href="{{ site.data.url.project }}">商业项目</a></li>
+          <!-- <li><a href="{{ site.data.url.link }}">链接</a></li> -->
+        </ul>
+      </div>
+      <!-- Other links -->
+      <div class="other">
+        <b>狡兔三窟</b>
+        <ul>
+          <li><a href="{{ site.data.author.website.url }}" target="_blank" rel="external nofollow">{{ site.data.author.website.name }}</a></li>
+          <li><a href="http://weibo.com/ourairyu" target="_blank" rel="external nofollow">微博</a></li>
+          <li><a href="https://github.com/ourai" target="_blank" rel="external nofollow">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <!-- W3C tech badge -->
+    <p class="w3c_techs"><a href="http://validator.w3.org/check?uri=referer" target="_blank" rel="external nofollow"><img src="http://www.w3.org/html/logo/badge/html5-badge-h-css3-semantics.png" width="165" height="64" alt="HTML5 Powered with CSS3 / Styling, and Semantics" title="HTML5 Powered with CSS3 / Styling, and Semantics"></a></p>
+    <!-- Author's profile -->
+    <div class="profile" itemscope itemtype="http://schema.org/Person" lang="en">
+      <a href="{{ site.data.author.profile }}" class="avatar_link" target="_blank" rel="external nofollow"><img class="avatar" src="{{ site.data.author.avatar }}?s=120" itemprop="image" alt="{{ site.data.author.name.zh }}"></a>
+      <div class="profile_info">
+        <h3 class="author"><a href="{{ site.data.author.profile }}" class="author_link" itemprop="name" target="_blank" rel="external nofollow">{{ site.data.author.name.en }}</a></h3>
+        <p>Developer / Blogger</p>
+      </div>
+    </div>
+    <!-- Copyright -->
+    <p class="copyright">Copyright &copy; {{ site.posts.last.date | date: "%Y" }}-{{ site.time | date: "%Y" }} <a href="{{ site.data.author.website.url }}" target="_blank" rel="external nofollow" title="{{ site.data.author.website.name }}">Ourai.WS</a></p>
+    <!-- Powered by -->
+    <p class="dependencies">Powered by {% for d in site.data.dependencies %}<a href="{{ d.url }}" target="_blank" rel="external nofollow" title="{{ d.desc }}">{{ d.name }}</a>{% if forloop.rindex != 1 %}, {% endif %}{% endfor %}</p>
+  </div>
+</footer>
+{% assign js_url = site.data.url.root | append: "/" | append: site.data.url.js %}
+<!-- <script src="{{ js_url }}/site.js"></script> -->
+{% if page.js %}
+  {% for js in page.js %}
+<script src="{{ js_url }}/{{ js }}.js"></script>
+  {% endfor %}
+{% endif %}

@@ -1,0 +1,35 @@
+---
+template: page
+---
+
+{% include intro.html %}
+{% include header.html %}
+  <main class="layout-container">
+    <!-- Page's header -->
+    <header>
+      <div class="layout-inner">
+        {% if page.title %}
+          {% assign title = page.title %}
+        {% else %}
+          {% assign title = site.data.info.title.zh %}
+        {% endif %}
+
+        {% if page.description %}
+          {% assign desc = page.description %}
+        {% else %}
+          {% assign desc = site.data.info.tagline %}
+        {% endif %}
+        <h1>{{ title }}</h1>
+        <p>{{ desc }}</p>
+      </div>
+    </header>
+    <!-- Page's main content -->
+    <div class="layout-content layout-inner">
+      {{ content }}
+      {% if page.comments == true %}
+        {% include disqus.html %}
+      {% endif %}
+    </div>
+  </main>
+{% include footer.html %}
+{% include outro.html %}

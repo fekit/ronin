@@ -1,3 +1,25 @@
-title: JavaScript Revolution
-url: http://jr.ourai.ws/
-author: 欧雷
+# Global
+encoding: utf-8
+timezone: Asia/Shanghai
+
+# pygments: false
+markdown: kramdown
+gems:
+  - jemoji
+
+relative_permalinks: false
+permalink: /posts/:title/
+
+# YAML frontmatter
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+      layout_type: "frameset"
+  - score:
+      path: ""
+      type: "post"
+    values:
+      layout: "article"
+      comments: true
