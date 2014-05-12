@@ -1164,8 +1164,8 @@ dateStr2obj = function(date_str) {
   var date, date_parts;
   date_str = this.trim(date_str);
   date = new Date(date_str);
-  date_parts = date_str.match(storage.regexps.date.iso8601);
   if (isNaN(date.getTime())) {
+    date_parts = date_str.match(storage.regexps.date.iso8601);
     date = date_parts != null ? ISOstr2date.call(this, date_parts) : new Date;
   }
   return date;

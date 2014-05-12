@@ -13,10 +13,10 @@
 dateStr2obj = ( date_str ) ->
   date_str = @trim date_str
   date = new Date date_str
-  date_parts = date_str.match storage.regexps.date.iso8601
 
   if isNaN date.getTime()
     # 为了兼容 IE9-
+    date_parts = date_str.match storage.regexps.date.iso8601
     date = if date_parts? then ISOstr2date.call(this, date_parts) else new Date
 
   return date
@@ -89,8 +89,16 @@ timezoneOffset = ( timezone ) ->
 
 DateTimeNames = 
   month:
-    long: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    short: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    long: [
+        "January", "February", "March", "April",
+        "May", "June", "July", "August",
+        "September", "October", "November", "December"
+      ]
+    short: [
+        "Jan", "Feb", "Mar", "Apr",
+        "May", "Jun", "Jul", "Aug",
+        "Sep", "Oct", "Nov", "Dec"
+      ]
   week:
     long: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thurday", "Friday", "Saturday"]
     short: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
