@@ -335,9 +335,14 @@ storage.methods = {
    * A variable is considered empty if its value is or like:
    *  - null
    *  - undefined
+   *  - false
    *  - ""
    *  - []
    *  - {}
+   *  - 0
+   *  - 0.0
+   *  - "0"
+   *  - "0.0"
    *
    * @method  isEmpty
    * @param   object {Mixed}
@@ -348,9 +353,7 @@ storage.methods = {
   isEmpty: function(object) {
     var name, result;
     result = false;
-    if ((object == null) || object === "") {
-      result = true;
-    } else if ((this.isArray(object) || this.isArrayLike(object)) && object.length === 0) {
+    if ((object == null) || !object) {
       result = true;
     } else if (this.isObject(object)) {
       result = true;
@@ -440,6 +443,10 @@ storage = {
   regexps: {
     date: {
       iso8601: /^(\d{4})\-(\d{2})\-(\d{2})(?:T(\d{2})\:(\d{2})\:(\d{2})(?:(?:\.)(\d{3}))?(Z|[+-]\d{2}\:\d{2})?)?$/
+    },
+    object: {
+      array: /\[(.*)\]/,
+      number: /(-?[0-9]+)/
     }
   },
   modules: {
@@ -593,10 +600,10 @@ storage.modules.Core.Global = {
         }
         return result;
       },
-      value: false,
       validator: function(guise) {
         return this.isString(guise);
-      }
+      },
+      value: false
     }, {
 
       /*
@@ -702,39 +709,82 @@ storage.modules.Core.Global = {
        */
       name: "stringify",
       handler: function(target) {
-        var e, result;
-        switch (this.type(target)) {
-          case "array":
-            result = "[" + (stringifyCollection.call(this, target)) + "]";
-            break;
-          case "object":
-            if (this.isPlainObject(target)) {
-              try {
-                result = JSON.stringify(target);
-              } catch (_error) {
-                e = _error;
-                result = "{" + (stringifyCollection.call(this, target)) + "}";
-              }
-            }
-            break;
-          case "function":
-          case "date":
-          case "regexp":
-            result = target.toString();
-            break;
-          case "string":
-            result = "\"" + target + "\"";
-            break;
-          default:
+        var e, result, t;
+        t = this.type(target);
+        if (t === "object") {
+          if (this.isPlainObject(target)) {
             try {
-              result = String(target);
+              result = JSON.stringify(target);
             } catch (_error) {
               e = _error;
-              result = "";
+              result = "{" + (stringifyCollection.call(this, target)) + "}";
             }
+          } else {
+            result = "";
+          }
+        } else {
+          switch (t) {
+            case "array":
+              result = "[" + (stringifyCollection.call(this, target)) + "]";
+              break;
+            case "function":
+            case "date":
+            case "regexp":
+              result = target.toString();
+              break;
+            case "string":
+              result = "\"" + target + "\"";
+              break;
+            default:
+              try {
+                result = String(target);
+              } catch (_error) {
+                e = _error;
+                result = "";
+              }
+          }
         }
         return result;
       }
+    }, {
+      name: "parse",
+      handler: function(target) {
+        var result;
+        target = this.trim(target);
+        result = target;
+        this.each(storage.regexps.object, (function(_this) {
+          return function(r, o) {
+            var re_c, re_g, re_t;
+            re_t = new RegExp("^" + r.source + "$");
+            if (re_t.test(target)) {
+              switch (o) {
+                case "array":
+                  re_g = new RegExp("" + r.source, "g");
+                  re_c = /(\[.*\])/;
+                  r = re_g.exec(target);
+                  result = [];
+                  while (r != null) {
+                    _this.each(r[1].split(","), function(unit, idx) {
+                      return result.push(_this.parse(unit));
+                    });
+                    break;
+                  }
+                  break;
+                case "number":
+                  result *= 1;
+              }
+              return false;
+            } else {
+              return true;
+            }
+          };
+        })(this));
+        return result;
+      },
+      validator: function(target) {
+        return this.isString(target);
+      },
+      value: ""
     }
   ]
 };

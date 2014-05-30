@@ -15,5 +15,8 @@ storage =
             (Z|[+-]\d{2}\:\d{2})?                           # timezone
           )?
         $ ///
+    object:
+      array: /\[(.*)\]/
+      number: /(-?[0-9]+)/
   modules:
     Core: {}
