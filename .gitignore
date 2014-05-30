@@ -1,5 +1,4 @@
-# Directories
 /vendors
 /node_modules
-
-# Files
+/_site
+/.sass-cache
