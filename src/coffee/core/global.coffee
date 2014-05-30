@@ -211,25 +211,29 @@ storage.modules.Core.Global =
       name: "stringify"
 
       handler: ( target ) ->
-        switch @type target
-          when "array"
-            result = "[#{stringifyCollection.call this, target}]"
-          when "object"
-            if @isPlainObject target
-              try
-                result = JSON.stringify target
-              catch e
-                result = "{#{stringifyCollection.call this, target}}"
-              
-          when "function", "date", "regexp"
-            result = target.toString()
-          when "string"
-            result = "\"#{target}\""
-          else
+        t = @type target
+
+        if t is "object"
+          if @isPlainObject target
             try
-              result = String target
+              result = JSON.stringify target
             catch e
-              result = ""
+              result = "{#{stringifyCollection.call this, target}}"
+          else
+            result = ""
+        else
+          switch t
+            when "array"
+              result = "[#{stringifyCollection.call this, target}]"
+            when "function", "date", "regexp"
+              result = target.toString()
+            when "string"
+              result = "\"#{target}\""
+            else
+              try
+                result = String target
+              catch e
+                result = ""
             
         return result
     }
