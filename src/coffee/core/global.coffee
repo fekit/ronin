@@ -35,6 +35,22 @@ compareObjects = ( base, target, strict, connate ) ->
 
   return result
 
+###
+# 将 Array、Object 转化为字符串
+# 
+# @private
+# @method  stringifyCollection
+# @param   collection {Array/Plain Object}
+# @return  {String}
+###
+stringifyCollection = ( collection ) ->
+  if @isArray collection
+    stack = (@stringify ele for ele in collection)
+  else
+    stack = ("\"#{key}\":#{@stringify val}" for key, val of collection)
+
+  return stack.join ","
+
 storage.modules.Core.Global =
   handlers: [
     {
@@ -183,6 +199,39 @@ storage.modules.Core.Global =
           min = 0
 
         return min + Math.floor Math.random() * (max - min + 1)
+    },
+    {
+      ###
+      # 字符串化
+      #
+      # @method  stringify
+      # @param   target {Variant}
+      # @return  {String}
+      ###
+      name: "stringify"
+
+      handler: ( target ) ->
+        switch @type target
+          when "array"
+            result = "[#{stringifyCollection.call this, target}]"
+          when "object"
+            if @isPlainObject target
+              try
+                result = JSON.stringify target
+              catch e
+                result = "{#{stringifyCollection.call this, target}}"
+              
+          when "function", "date", "regexp"
+            result = target.toString()
+          when "string"
+            result = "\"#{target}\""
+          else
+            try
+              result = String target
+            catch e
+              result = ""
+            
+        return result
     }
   ]
 

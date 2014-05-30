@@ -424,7 +424,7 @@ window[LIB_CONFIG.name] = _H;
 }(typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
 
 "use strict";
-var DateTimeFormats, DateTimeNames, ISOstr2date, LIB_CONFIG, NAMESPACE_EXP, UTCstr2date, compareObjects, dateStr2obj, dtwz, error, filterElement, flattenArray, floatLength, formatDate, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, timezoneOffset, toString, unicode, utf8_to_base64, _H,
+var DateTimeFormats, DateTimeNames, ISOstr2date, LIB_CONFIG, NAMESPACE_EXP, UTCstr2date, compareObjects, dateStr2obj, dtwz, error, filterElement, flattenArray, floatLength, formatDate, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, stringifyCollection, timezoneOffset, toString, unicode, utf8_to_base64, _H,
   __slice = [].slice;
 
 LIB_CONFIG = {
@@ -505,6 +505,42 @@ compareObjects = function(base, target, strict, connate) {
     }
   }
   return result;
+};
+
+
+/*
+ * 将 Array、Object 转化为字符串
+ * 
+ * @private
+ * @method  stringifyCollection
+ * @param   collection {Array/Plain Object}
+ * @return  {String}
+ */
+
+stringifyCollection = function(collection) {
+  var ele, key, stack, val;
+  if (this.isArray(collection)) {
+    stack = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = collection.length; _i < _len; _i++) {
+        ele = collection[_i];
+        _results.push(this.stringify(ele));
+      }
+      return _results;
+    }).call(this);
+  } else {
+    stack = (function() {
+      var _results;
+      _results = [];
+      for (key in collection) {
+        val = collection[key];
+        _results.push("\"" + key + "\":" + (this.stringify(val)));
+      }
+      return _results;
+    }).call(this);
+  }
+  return stack.join(",");
 };
 
 storage.modules.Core.Global = {
@@ -654,6 +690,50 @@ storage.modules.Core.Global = {
           min = 0;
         }
         return min + Math.floor(Math.random() * (max - min + 1));
+      }
+    }, {
+
+      /*
+       * 字符串化
+       *
+       * @method  stringify
+       * @param   target {Variant}
+       * @return  {String}
+       */
+      name: "stringify",
+      handler: function(target) {
+        var e, result;
+        switch (this.type(target)) {
+          case "array":
+            result = "[" + (stringifyCollection.call(this, target)) + "]";
+            break;
+          case "object":
+            if (this.isPlainObject(target)) {
+              try {
+                result = JSON.stringify(target);
+              } catch (_error) {
+                e = _error;
+                result = "{" + (stringifyCollection.call(this, target)) + "}";
+              }
+            }
+            break;
+          case "function":
+          case "date":
+          case "regexp":
+            result = target.toString();
+            break;
+          case "string":
+            result = "\"" + target + "\"";
+            break;
+          default:
+            try {
+              result = String(target);
+            } catch (_error) {
+              e = _error;
+              result = "";
+            }
+        }
+        return result;
       }
     }
   ]
