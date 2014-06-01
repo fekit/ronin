@@ -20,7 +20,7 @@ var LIB_CONFIG, attach, batch, defineProp, hasOwnProp, settings, storage, toStri
 
 LIB_CONFIG = {
   name: "Miso",
-  version: "0.3.3"
+  version: "0.3.4"
 };
 
 toString = {}.toString;
@@ -125,7 +125,7 @@ attach = function(set, data, host) {
   var handler, method, methods, name, validator, validators, value, _i, _len;
   name = set.name;
   methods = storage.methods;
-  if (!methods.isFunction(host[name])) {
+  if (set.expose !== false && !methods.isFunction(host[name])) {
     handler = set.handler;
     value = hasOwnProp(set, "value") ? set.value : data.value;
     validators = [
@@ -335,14 +335,9 @@ storage.methods = {
    * A variable is considered empty if its value is or like:
    *  - null
    *  - undefined
-   *  - false
    *  - ""
    *  - []
    *  - {}
-   *  - 0
-   *  - 0.0
-   *  - "0"
-   *  - "0.0"
    *
    * @method  isEmpty
    * @param   object {Mixed}
@@ -353,7 +348,9 @@ storage.methods = {
   isEmpty: function(object) {
     var name, result;
     result = false;
-    if ((object == null) || !object) {
+    if ((object == null) || object === "") {
+      result = true;
+    } else if ((this.isArray(object) || this.isArrayLike(object)) && object.length === 0) {
       result = true;
     } else if (this.isObject(object)) {
       result = true;
@@ -784,7 +781,8 @@ storage.modules.Core.Global = {
       validator: function(target) {
         return this.isString(target);
       },
-      value: ""
+      value: "",
+      expose: false
     }
   ]
 };

@@ -356,7 +356,8 @@ storage.modules.Core.Global = {
       validator: function(target) {
         return this.isString(target);
       },
-      value: ""
+      value: "",
+      expose: false
     }
   ]
 };

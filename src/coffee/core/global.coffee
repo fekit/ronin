@@ -273,6 +273,8 @@ storage.modules.Core.Global =
         return @isString target
 
       value: ""
+
+      expose: false
     }
   ]
 
