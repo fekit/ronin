@@ -8,9 +8,11 @@ module.exports = ( grunt ) ->
       "grunt-contrib-concat"
       "grunt-contrib-copy"
       "grunt-contrib-clean"
+      "grunt-contrib-yuidoc"
     ]
 
   grunt.initConfig
+    pkg: grunt.file.readJSON "package.json"
     meta:
       src: "src"
       src_img: "<%= meta.src %>/images"
@@ -21,6 +23,15 @@ module.exports = ( grunt ) ->
       assets_css: "<%= meta.assets %>/stylesheets"
       assets_js: "<%= meta.assets %>/javascripts"
       vendor: "vendors"
+    yuidoc:
+      api:
+        name: "<%= pkg.name %>"
+        description: "<%= pkg.description %>"
+        version: "<%= pkg.version %>"
+        url: "<%= pkg.homepage %>"
+        options:
+          paths: "src/"
+          outdir: "pages/"
     copy:
       html5shiv:
         src: "<%= meta.vendor %>/html5shiv/dist/html5shiv-printshiv.min.js"
