@@ -1,4 +1,4 @@
-/.sass-cache
-/_site
-/node_modules
 /vendors
+/node_modules
+/_site
+/.sass-cache
