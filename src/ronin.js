@@ -154,7 +154,7 @@ storage.modules.Core.Global = {
       name: "mask",
       handler: function(guise) {
         var error, lib_name, result;
-        if (this.hasProp(window, guise)) {
+        if (this.hasProp(guise)) {
           if (window.console) {
             console.error("'" + guise + "' has existed as a property of Window object.");
           }

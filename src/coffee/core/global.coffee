@@ -84,7 +84,7 @@ storage.modules.Core.Global =
       name: "mask"
 
       handler: ( guise ) ->
-        if @hasProp window, guise
+        if @hasProp guise
           console.error "'#{guise}' has existed as a property of Window object." if window.console
         else
           lib_name = @__meta__.name
