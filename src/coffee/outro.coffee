@@ -1,4 +1,4 @@
-_H = Miso storage.modules.Core
+_H = Miso storage.modules
 
 # Set the library' info as a meta data
 try
