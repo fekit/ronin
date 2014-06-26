@@ -75,7 +75,7 @@ storage.modules.Core.Global =
     },
     {
       ###
-      # 更改 LIB_CONFIG.name 以适应项目「本土化」
+      # 更改 LIB_CONFIG.name
       # 
       # @method   mask
       # @param    guise {String}    New name for library
@@ -117,7 +117,7 @@ storage.modules.Core.Global =
       # @param   [ns_str_1] {String}     The first namespace string
       # @param   [ns_str_2] {String}     The second namespace string
       # @param   [ns_str_*] {String}     Numerous namespace string
-      # @param   [global] {Boolean}      Whether set window as the host object
+      # @param   [isGlobal] {Boolean}    Whether set window as the host object
       # @return  {Object}                A reference to the last namespace object created
       ###
       name: "namespace"

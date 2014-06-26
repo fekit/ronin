@@ -1,13 +1,13 @@
-_H = Miso storage.modules
+__util = __proc storage.modules
 
 # Set the library' info as a meta data
 try
-  Object.defineProperty _H, "__meta__",
+  Object.defineProperty __util, "__meta__",
     __proto__: null
     writable: true
     value: LIB_CONFIG
 catch error
-  _H.mixin
+  __util.mixin
     __meta__: LIB_CONFIG
 
-window[LIB_CONFIG.name] = _H
+window[LIB_CONFIG.name] = __util
