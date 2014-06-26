@@ -1,5 +1,9 @@
 # Rōnin CHANGELOG
 
+## 0.3.0 (2014-06-26)
+
+将 [Miso](https://github.com/ourai/miso) 整合进来
+
 ## 0.2.4 (2014-05-30)
 
 1.  引入 [Miso v0.3.3](https://github.com/ourai/miso/tree/0.3.3)
