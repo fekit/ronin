@@ -30,7 +30,7 @@
   # @return   {Boolean}
   ###
   hasOwnProp = ( obj, prop ) ->
-    return if not obj? then false else Object.prototype.hasOwnProperty.call obj, prop
+    return if not obj? then false else Object::hasOwnProperty.call obj, prop
 
   ###
   # 为指定 object 或 function 定义属性

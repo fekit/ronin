@@ -170,7 +170,7 @@ storage.modules.Core.Array =
 
       handler: ( element, array, from ) ->
         index = -1
-        indexOf = Array.prototype.indexOf
+        indexOf = Array::indexOf
         length = array.length
 
         from = if from then (if from < 0 then Math.max(0, length + from) else from) else 0
