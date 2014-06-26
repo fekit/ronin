@@ -17,6 +17,8 @@ module.exports = ( grunt ) ->
     meta:
       src: "src"
       coffee: "<%= meta.src %>/coffee"
+      proc: "<%= meta.coffee %>/preprocessor"
+      class: "<%= meta.coffee %>/classes"
       core: "<%= meta.coffee %>/core"
       dest: "dest"
       vendors: "vendors"
@@ -25,9 +27,25 @@ module.exports = ( grunt ) ->
       tests: "<%= meta.build %>/tests"
       tasks: "<%= meta.build %>/tasks"
     concat:
+      coffee_proc:
+        src: [
+            "<%= meta.proc %>/intro.coffee"
+            "<%= meta.proc %>/variables.coffee"
+            "<%= meta.proc %>/functions.coffee"
+            "<%= meta.proc %>/methods.coffee"
+            "<%= meta.proc %>/outro.coffee"
+          ]
+        dest: "<%= meta.coffee %>/preprocessor.coffee"
       coffee:
         src: [
             "<%= meta.coffee %>/intro.coffee"
+            # preprocessor
+            "<%= meta.proc %>/intro.coffee"
+            "<%= meta.proc %>/variables.coffee"
+            "<%= meta.proc %>/functions.coffee"
+            "<%= meta.proc %>/methods.coffee"
+            "<%= meta.proc %>/outro.coffee"
+            # ---
             "<%= meta.coffee %>/variables.coffee"
             "<%= meta.coffee %>/functions.coffee"
             "<%= meta.core %>/builtin.coffee"
@@ -45,7 +63,7 @@ module.exports = ( grunt ) ->
             return src.replace /@(NAME|VERSION)/g, ( text, key ) ->
               return info[key.toLowerCase()]
         src: [
-            "<%= meta.miso %>/miso.js"
+            # "<%= meta.miso %>/miso.js"
             "<%= meta.src %>/intro.js"
             "<%= meta.src %>/<%= pkg.name %>.js"
             "<%= meta.src %>/outro.js"
@@ -58,6 +76,9 @@ module.exports = ( grunt ) ->
       build:
         src: "<%= meta.dest %>/<%= pkg.name %>.coffee"
         dest: "<%= meta.src %>/<%= pkg.name %>.js"
+      preprocessor:
+        src: "<%= meta.coffee %>/preprocessor.coffee"
+        dest: "<%= meta.src %>/preprocessor.js"
     uglify:
       options:
         banner: "/*! <%= pkg.name %> <%= grunt.template.today('yyyy-mm-dd') %> */\n"
@@ -81,5 +102,7 @@ module.exports = ( grunt ) ->
 
   grunt.loadNpmTasks task for task in npmTasks
 
-  grunt.registerTask "compile", ["concat:coffee", "coffee", "concat:js", "uglify"]
+  grunt.registerTask "preprocessor", ["concat:coffee_proc", "coffee:preprocessor"]
+
+  grunt.registerTask "compile", ["concat:coffee", "coffee:build", "concat:js", "uglify"]
   grunt.registerTask "default", ["compile", "clean", "copy"]
