@@ -21,6 +21,10 @@ module.exports = ( grunt ) ->
       temp: ".<%= pkg.name %>-cache"
     concat:
       coffee:
+        options:
+          process: ( src, filepath ) ->
+            return src.replace /@(NAME|VERSION)/g, ( text, key ) ->
+              return info[key.toLowerCase()]
         files:
           "<%= meta.temp %>/preprocessor.coffee": [
               "<%= meta.proc %>/intro.coffee"
@@ -43,16 +47,11 @@ module.exports = ( grunt ) ->
               "src/outro.coffee"
             ]
       js:
-        options:
-          process: ( src, filepath ) ->
-            return src.replace /@(NAME|VERSION)/g, ( text, key ) ->
-              return info[key.toLowerCase()]
-        src: [
+        files: "<%= pkg.name %>.js": [
             "build/intro.js"
             "<%= meta.temp %>/<%= pkg.name %>.js"
             "build/outro.js"
           ]
-        dest: "<%= pkg.name %>.js"
     coffee:
       options:
         bare: true

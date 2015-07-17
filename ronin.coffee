@@ -2,8 +2,8 @@
 
 # Config of library
 LIB_CONFIG =
-  name: "@NAME"
-  version: "@VERSION"
+  name: "Ronin"
+  version: "0.3.1"
 
 __proc = do ( window ) ->
   

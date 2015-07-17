@@ -21,7 +21,7 @@ var DateTimeFormats, DateTimeNames, ISOstr2date, LIB_CONFIG, NAMESPACE_EXP, UTCs
 
 LIB_CONFIG = {
   name: "Ronin",
-  version: "0.3.0"
+  version: "0.3.1"
 };
 
 __proc = (function(window) {
