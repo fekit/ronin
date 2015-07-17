@@ -1,4 +1,5 @@
 /vendors
 /node_modules
 /_site
+/.ronin-cache
 /.sass-cache

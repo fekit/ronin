@@ -1,9 +1,22 @@
 {
   "name": "ronin",
   "version": "0.3.0",
-  "main": ["dest/ronin.min.js"],
+  "main": [
+    "ronin.coffee",
+    "ronin.js",
+    "ronin.min.js"
+  ],
   "license": "MIT",
-  "ignore": ["**/*", "!dest/**/*"],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "*.json",
+    "*.md",
+    "Gruntfile.coffee"
+  ],
+  "devDependencies": {
+    "jquery": "https://github.com/jquery/jquery.git#1.8.3"
+  },
   "keywords": [
     "javascript",
     "enhancement",

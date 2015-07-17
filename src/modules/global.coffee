@@ -11,27 +11,39 @@
 ###
 compareObjects = ( base, target, strict, connate ) ->
   result = false
-  lib = this
-  plain = lib.isPlainObject base
+  plain = @isPlainObject base
 
   if (plain or connate) and strict
     result = target is base
   else
     if plain
-      isRun = compareObjects.apply lib, [lib.keys(base), lib.keys(target), false, true]
+      isRun = compareObjects.apply this, [@keys(base), @keys(target), false, true]
     else
       isRun = target.length is base.length
     
     if isRun
-      lib.each base, ( n, i ) ->
-        type = lib.type n
+      @each base, ( n, i ) =>
+        type = @type n
+        t = target[i]
 
-        if lib.inArray(type, ["string", "number", "boolean", "null", "undefined"]) > -1
-          return result = target[i] is n
-        else if lib.inArray(type, ["date", "regexp", "function"]) > -1
-          return result = if strict then target[i] is n else target[i].toString() is n.toString()
-        else if lib.inArray(type, ["array", "object"]) > -1
-          return result = compareObjects.apply lib, [n, target[i], strict, connate]
+        # 有包装对象的原始类型
+        if @inArray type, ["string", "number", "boolean"] > -1
+          n_str = n + ""
+          t_str = t + ""
+          t_type = @type t
+          illegalNums = ["NaN", "Infinity", "-Infinity"]
+
+          if type is "number" and (@inArray(n_str, illegalNums) > -1 or @inArray(t_str, illegalNums) > -1)
+            return result = false
+          else
+            return result = if strict is true then t is n else t_str is n_str
+        # 无包装对象的原始类型
+        else if @inArray(type, ["null", "undefined"]) > -1
+          return result = t is n
+        else if @inArray(type, ["date", "regexp", "function"]) > -1
+          return result = if strict then t is n else t.toString() is n.toString()
+        else if @inArray(type, ["array", "object"]) > -1
+          return result = compareObjects.apply this, [n, t, strict, connate]
 
   return result
 
@@ -53,6 +65,20 @@ stringifyCollection = ( collection ) ->
 
 storage.modules.Core.Global =
   handlers: [
+    {
+      ###
+      # 扩充对象
+      # 
+      # @method   extend
+      # @param    data {Plain Object/Array}
+      # @param    host {Object}
+      # @return   {Object}
+      ###
+      name: "extend"
+
+      handler: ( data, host ) ->
+        return __proc data, host ? this
+    },
     {
       ###
       # 别名
@@ -84,7 +110,7 @@ storage.modules.Core.Global =
       name: "mask"
 
       handler: ( guise ) ->
-        if @hasProp guise
+        if @hasProp guise, window
           console.error "'#{guise}' has existed as a property of Window object." if window.console
         else
           lib_name = @__meta__.name
@@ -124,20 +150,25 @@ storage.modules.Core.Global =
 
       handler: ->
         args = arguments
-        lib = this
         ns = {}
         hostObj = args[0]
         
         # Determine the host object.
-        (hostObj = if args[args.length - 1] is true then window else this) if not lib.isPlainObject hostObj
+        (hostObj = if args[args.length - 1] is true then window else this) if not @isPlainObject hostObj
 
-        lib.each args, ( arg ) ->
-          if lib.isString(arg) and /^[0-9A-Z_.]+[^_.]$/i.test(arg)
+        @each args, ( arg ) =>
+          if @isString(arg) and /^[0-9A-Z_.]+[^_.]?$/i.test(arg)
             obj = hostObj
 
-            lib.each arg.split("."), ( part, idx, parts ) ->
-              (obj[ part ] = if idx is parts.length - 1 then null else {}) if obj[part] is undefined
+            @each arg.split("."), ( part, idx, parts ) =>
+              if not obj?
+                return false
+
+              if not @hasProp part, obj
+                obj[part] = if idx is parts.length - 1 then null else {}
+
               obj = obj[part]
+
               return true
 
             ns = obj
@@ -160,26 +191,30 @@ storage.modules.Core.Global =
 
       handler: ( base, target, strict ) ->
         result = false
-        lib = this
-        type_b = lib.type( base )
+        baseType = @type base
 
-        if lib.type(target) is type_b
-          plain_b = lib.isPlainObject base
+        if @type(target) is baseType
+          plain_b = @isPlainObject base
 
-          if plain_b and lib.isPlainObject(target) or type_b isnt "object"
+          if plain_b and @isPlainObject(target) or baseType isnt "object"
             # 是否为“天然”的数组（以别于后来将字符串等转换成的数组）
-            connate = lib.isArray base
+            connate = @isArray base
 
             if not plain_b and not connate
               base = [base]
               target = [target]
 
             # If 'strict' is true, then compare the objects' references, else only compare their values.
-            strict = false if not lib.isBoolean strict
+            strict = false if not @isBoolean strict
 
-            result = compareObjects.apply(lib, [base, target, strict, connate])
+            result = compareObjects.apply(this, [base, target, strict, connate])
 
         return result
+
+      validator: ->
+        return arguments.length > 1
+
+      value: false
     },
     {
       ###
@@ -211,71 +246,61 @@ storage.modules.Core.Global =
       name: "stringify"
 
       handler: ( target ) ->
-        t = @type target
-
-        if t is "object"
-          if @isPlainObject target
-            try
-              result = JSON.stringify target
-            catch e
-              result = "{#{stringifyCollection.call this, target}}"
+        switch @type target
+          when "object"
+            result = if @isPlainObject(target) then "{#{stringifyCollection.call this, target}}" else result = ""
+          when "array"
+            result = "[#{stringifyCollection.call this, target}]"
+          when "function", "date", "regexp"
+            result = target.toString()
+          when "string"
+            result = "\"#{target}\""
           else
-            result = ""
-        else
-          switch t
-            when "array"
-              result = "[#{stringifyCollection.call this, target}]"
-            when "function", "date", "regexp"
-              result = target.toString()
-            when "string"
-              result = "\"#{target}\""
-            else
-              try
-                result = String target
-              catch e
-                result = ""
+            try
+              result = String target
+            catch e
+              result = ""
             
         return result
-    },
-    {
-      name: "parse"
-
-      handler: ( target ) ->
-        target = @trim target
-        result = target
-
-        @each storage.regexps.object, ( r, o ) =>
-          re_t = new RegExp "^#{r.source}$"
-
-          if re_t.test target
-            switch o
-              when "array"
-                re_g = new RegExp "#{r.source}", "g"
-                re_c = /(\[.*\])/
-                r = re_g.exec target
-                result = []
-
-                while r?
-                  @each r[1].split(","), ( unit, idx ) =>
-                    result.push @parse unit
-
-                  break;
-              when "number"
-                result *= 1
-
-            return false
-          else
-            return true
-
-        return result
-
-      validator: ( target ) ->
-        return @isString target
-
-      value: ""
-
-      expose: false
     }
+    # ,
+    # {
+    #   name: "parse"
+
+    #   handler: ( target ) ->
+    #     target = @trim target
+    #     result = target
+
+    #     @each storage.regexps.object, ( r, o ) =>
+    #       re_t = new RegExp "^#{r.source}$"
+
+    #       if re_t.test target
+    #         switch o
+    #           when "array"
+    #             re_g = new RegExp "#{r.source}", "g"
+    #             re_c = /(\[.*\])/
+    #             r = re_g.exec target
+    #             result = []
+
+    #             while r?
+    #               @each r[1].split(","), ( unit, idx ) =>
+    #                 result.push @parse unit
+
+    #               break;
+    #           when "number"
+    #             result *= 1
+
+    #         return false
+    #       else
+    #         return true
+
+    #     return result
+
+    #   validator: ( target ) ->
+    #     return @isString target
+
+    #   value: ""
+    # }
   ]
 
     # /**

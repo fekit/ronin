@@ -16,7 +16,7 @@
 }(typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
 
 "use strict";
-var DateTimeFormats, DateTimeNames, ISOstr2date, LIB_CONFIG, NAMESPACE_EXP, UTCstr2date, compareObjects, dateStr2obj, dtwz, error, filterElement, flattenArray, floatLength, formatDate, func, getMaxMin, global, ignoreSubStr, isArr, isCollection, name, range, storage, stringifyCollection, timezoneOffset, toString, unicode, utf8_to_base64, __proc, __util,
+var DateTimeFormats, DateTimeNames, ISOstr2date, LIB_CONFIG, NAMESPACE_EXP, UTCstr2date, compareObjects, dateStr2obj, dtwz, error, filterElement, flattenArray, floatLength, formatDate, func, getMaxMin, ignoreSubStr, isArr, isCollection, name, range, storage, stringifyCollection, timezoneOffset, toString, unicode, utf8_to_base64, __proc, __util,
   __slice = [].slice;
 
 LIB_CONFIG = {
@@ -24,9 +24,7 @@ LIB_CONFIG = {
   version: "0.3.0"
 };
 
-global = window;
-
-__proc = (function(global) {
+__proc = (function(window) {
   var attach, batch, defineProp, hasOwnProp, objectTypes, settings, storage, toString;
   toString = {}.toString;
   settings = {
@@ -49,11 +47,22 @@ __proc = (function(global) {
     var type, types, _fn, _i, _len;
     types = "Boolean Number String Function Array Date RegExp Object".split(" ");
     _fn = function(type) {
-      var lc;
+      var handler, lc;
       storage.types["[object " + type + "]"] = lc = type.toLowerCase();
-      return storage.methods["is" + type] = function(target) {
-        return this.type(target) === lc;
-      };
+      if (type === "Number") {
+        handler = function(target) {
+          if (isNaN(target)) {
+            return false;
+          } else {
+            return this.type(target) === lc;
+          }
+        };
+      } else {
+        handler = function(target) {
+          return this.type(target) === lc;
+        };
+      }
+      return storage.methods["is" + type] = handler;
     };
     for (_i = 0, _len = types.length; _i < _len; _i++) {
       type = types[_i];
@@ -179,24 +188,42 @@ __proc = (function(global) {
      * @return  {Object}
      */
     mixin: function() {
-      var args, copy, i, length, name, opts, target, _ref;
+      var args, clone, copy, copyIsArray, deep, i, length, name, opts, src, target;
       args = arguments;
       length = args.length;
-      target = (_ref = args[0]) != null ? _ref : {};
+      target = args[0] || {};
       i = 1;
+      deep = false;
+      if (this.type(target) === "boolean") {
+        deep = target;
+        target = args[1] || {};
+        i = 2;
+      }
+      if (typeof target !== "object" && !this.isFunction(target)) {
+        target = {};
+      }
       if (length === 1) {
         target = this;
         i--;
       }
       while (i < length) {
         opts = args[i];
-        if (typeof opts === "object") {
+        if (opts != null) {
           for (name in opts) {
             copy = opts[name];
+            src = target[name];
             if (copy === target) {
               continue;
             }
-            if (copy !== void 0) {
+            if (deep && copy && (this.isPlainObject(copy) || (copyIsArray = this.isArray(copy)))) {
+              if (copyIsArray) {
+                copyIsArray = false;
+                clone = src && this.isArray(src) ? src : [];
+              } else {
+                clone = src && this.isPlainObject(src) ? src : {};
+              }
+              target[name] = this.mixin(deep, clone, copy);
+            } else if (copy !== void 0) {
               target[name] = copy;
             }
           }
@@ -243,27 +270,37 @@ __proc = (function(global) {
      * @return  {String}
      */
     type: function(object) {
-      if (object == null) {
-        return String(object);
+      var result;
+      if (arguments.length === 0) {
+        result = null;
       } else {
-        return storage.types[toString.call(object)] || "object";
+        result = object == null ? String(object) : storage.types[toString.call(object)] || "object";
       }
+      return result;
     },
 
     /*
      * 切割 Array-Like Object 片段
      *
      * @method   slice
-     * @param    args {Array-Like}
-     * @param    index {Integer}
+     * @param    target {Array-Like}
+     * @param    begin {Integer}
+     * @param    end {Integer}
      * @return
      */
-    slice: function(args, index) {
-      if (args == null) {
-        return [];
+    slice: function(target, begin, end) {
+      var args, result;
+      if (target == null) {
+        result = [];
       } else {
-        return [].slice.call(args, Number(index) || 0);
+        end = Number(end);
+        args = [Number(begin) || 0];
+        if (arguments.length > 2 && !isNaN(end)) {
+          args.push(end);
+        }
+        result = [].slice.apply(target, args);
       }
+      return result;
     },
 
     /*
@@ -275,7 +312,7 @@ __proc = (function(global) {
      * @return   {Boolean}
      */
     hasProp: function(prop, obj) {
-      return hasOwnProp.apply(this, [(arguments.length < 2 ? global : obj), prop]);
+      return hasOwnProp.apply(this, [(arguments.length < 2 ? this : obj), prop]);
     },
 
     /*
@@ -308,7 +345,7 @@ __proc = (function(global) {
      * @return  {Boolean}
      */
     isNumeric: function(object) {
-      return !isNaN(parseFloat(object)) && isFinite(object);
+      return !this.isArray(object) && !isNaN(parseFloat(object)) && isFinite(object);
     },
 
     /*
@@ -397,12 +434,10 @@ __proc = (function(global) {
     isArrayLike: function(object) {
       var length, result;
       result = false;
-      if (this.isObject(object) && object !== null) {
-        if (!this.isWindow(object)) {
-          length = object.length;
-          if (object.nodeType === 1 && length || !this.isArray(object) && !this.isFunction(object) && (length === 0 || this.isNumber(length) && length > 0 && (length - 1) in object)) {
-            result = true;
-          }
+      if (this.isObject(object) && !this.isWindow(object)) {
+        length = object.length;
+        if (object.nodeType === 1 && length || !this.isArray(object) && !this.isFunction(object) && (length === 0 || this.isNumber(length) && length > 0 && (length - 1) in object)) {
+          result = true;
         }
       }
       return result;
@@ -416,7 +451,7 @@ __proc = (function(global) {
     return __proc[name] = handler;
   });
   return __proc;
-})(global);
+})(window);
 
 toString = {}.toString;
 
@@ -466,30 +501,42 @@ storage.modules.Core.BuiltIn = {
  */
 
 compareObjects = function(base, target, strict, connate) {
-  var isRun, lib, plain, result;
+  var isRun, plain, result;
   result = false;
-  lib = this;
-  plain = lib.isPlainObject(base);
+  plain = this.isPlainObject(base);
   if ((plain || connate) && strict) {
     result = target === base;
   } else {
     if (plain) {
-      isRun = compareObjects.apply(lib, [lib.keys(base), lib.keys(target), false, true]);
+      isRun = compareObjects.apply(this, [this.keys(base), this.keys(target), false, true]);
     } else {
       isRun = target.length === base.length;
     }
     if (isRun) {
-      lib.each(base, function(n, i) {
-        var type;
-        type = lib.type(n);
-        if (lib.inArray(type, ["string", "number", "boolean", "null", "undefined"]) > -1) {
-          return result = target[i] === n;
-        } else if (lib.inArray(type, ["date", "regexp", "function"]) > -1) {
-          return result = strict ? target[i] === n : target[i].toString() === n.toString();
-        } else if (lib.inArray(type, ["array", "object"]) > -1) {
-          return result = compareObjects.apply(lib, [n, target[i], strict, connate]);
-        }
-      });
+      this.each(base, (function(_this) {
+        return function(n, i) {
+          var illegalNums, n_str, t, t_str, t_type, type;
+          type = _this.type(n);
+          t = target[i];
+          if (_this.inArray(type, ["string", "number", "boolean"] > -1)) {
+            n_str = n + "";
+            t_str = t + "";
+            t_type = _this.type(t);
+            illegalNums = ["NaN", "Infinity", "-Infinity"];
+            if (type === "number" && (_this.inArray(n_str, illegalNums) > -1 || _this.inArray(t_str, illegalNums) > -1)) {
+              return result = false;
+            } else {
+              return result = strict === true ? t === n : t_str === n_str;
+            }
+          } else if (_this.inArray(type, ["null", "undefined"]) > -1) {
+            return result = t === n;
+          } else if (_this.inArray(type, ["date", "regexp", "function"]) > -1) {
+            return result = strict ? t === n : t.toString() === n.toString();
+          } else if (_this.inArray(type, ["array", "object"]) > -1) {
+            return result = compareObjects.apply(_this, [n, t, strict, connate]);
+          }
+        };
+      })(this));
     }
   }
   return result;
@@ -536,6 +583,20 @@ storage.modules.Core.Global = {
     {
 
       /*
+       * 扩充对象
+       * 
+       * @method   extend
+       * @param    data {Plain Object/Array}
+       * @param    host {Object}
+       * @return   {Object}
+       */
+      name: "extend",
+      handler: function(data, host) {
+        return __proc(data, host != null ? host : this);
+      }
+    }, {
+
+      /*
        * 别名
        * 
        * @method  alias
@@ -563,7 +624,7 @@ storage.modules.Core.Global = {
       name: "mask",
       handler: function(guise) {
         var error, lib_name, result;
-        if (this.hasProp(guise)) {
+        if (this.hasProp(guise, window)) {
           if (window.console) {
             console.error("'" + guise + "' has existed as a property of Window object.");
           }
@@ -602,29 +663,33 @@ storage.modules.Core.Global = {
        */
       name: "namespace",
       handler: function() {
-        var args, hostObj, lib, ns;
+        var args, hostObj, ns;
         args = arguments;
-        lib = this;
         ns = {};
         hostObj = args[0];
-        if (!lib.isPlainObject(hostObj)) {
+        if (!this.isPlainObject(hostObj)) {
           hostObj = args[args.length - 1] === true ? window : this;
         }
-        lib.each(args, function(arg) {
-          var obj;
-          if (lib.isString(arg) && /^[0-9A-Z_.]+[^_.]$/i.test(arg)) {
-            obj = hostObj;
-            lib.each(arg.split("."), function(part, idx, parts) {
-              if (obj[part] === void 0) {
-                obj[part] = idx === parts.length - 1 ? null : {};
-              }
-              obj = obj[part];
-              return true;
-            });
-            ns = obj;
-          }
-          return true;
-        });
+        this.each(args, (function(_this) {
+          return function(arg) {
+            var obj;
+            if (_this.isString(arg) && /^[0-9A-Z_.]+[^_.]?$/i.test(arg)) {
+              obj = hostObj;
+              _this.each(arg.split("."), function(part, idx, parts) {
+                if (obj == null) {
+                  return false;
+                }
+                if (!_this.hasProp(part, obj)) {
+                  obj[part] = idx === parts.length - 1 ? null : {};
+                }
+                obj = obj[part];
+                return true;
+              });
+              ns = obj;
+            }
+            return true;
+          };
+        })(this));
         return ns;
       }
     }, {
@@ -640,26 +705,29 @@ storage.modules.Core.Global = {
        */
       name: "equal",
       handler: function(base, target, strict) {
-        var connate, lib, plain_b, result, type_b;
+        var baseType, connate, plain_b, result;
         result = false;
-        lib = this;
-        type_b = lib.type(base);
-        if (lib.type(target) === type_b) {
-          plain_b = lib.isPlainObject(base);
-          if (plain_b && lib.isPlainObject(target) || type_b !== "object") {
-            connate = lib.isArray(base);
+        baseType = this.type(base);
+        if (this.type(target) === baseType) {
+          plain_b = this.isPlainObject(base);
+          if (plain_b && this.isPlainObject(target) || baseType !== "object") {
+            connate = this.isArray(base);
             if (!plain_b && !connate) {
               base = [base];
               target = [target];
             }
-            if (!lib.isBoolean(strict)) {
+            if (!this.isBoolean(strict)) {
               strict = false;
             }
-            result = compareObjects.apply(lib, [base, target, strict, connate]);
+            result = compareObjects.apply(this, [base, target, strict, connate]);
           }
         }
         return result;
-      }
+      },
+      validator: function() {
+        return arguments.length > 1;
+      },
+      value: false
     }, {
 
       /*
@@ -690,83 +758,32 @@ storage.modules.Core.Global = {
        */
       name: "stringify",
       handler: function(target) {
-        var e, result, t;
-        t = this.type(target);
-        if (t === "object") {
-          if (this.isPlainObject(target)) {
+        var e, result;
+        switch (this.type(target)) {
+          case "object":
+            result = this.isPlainObject(target) ? "{" + (stringifyCollection.call(this, target)) + "}" : result = "";
+            break;
+          case "array":
+            result = "[" + (stringifyCollection.call(this, target)) + "]";
+            break;
+          case "function":
+          case "date":
+          case "regexp":
+            result = target.toString();
+            break;
+          case "string":
+            result = "\"" + target + "\"";
+            break;
+          default:
             try {
-              result = JSON.stringify(target);
+              result = String(target);
             } catch (_error) {
               e = _error;
-              result = "{" + (stringifyCollection.call(this, target)) + "}";
+              result = "";
             }
-          } else {
-            result = "";
-          }
-        } else {
-          switch (t) {
-            case "array":
-              result = "[" + (stringifyCollection.call(this, target)) + "]";
-              break;
-            case "function":
-            case "date":
-            case "regexp":
-              result = target.toString();
-              break;
-            case "string":
-              result = "\"" + target + "\"";
-              break;
-            default:
-              try {
-                result = String(target);
-              } catch (_error) {
-                e = _error;
-                result = "";
-              }
-          }
         }
         return result;
       }
-    }, {
-      name: "parse",
-      handler: function(target) {
-        var result;
-        target = this.trim(target);
-        result = target;
-        this.each(storage.regexps.object, (function(_this) {
-          return function(r, o) {
-            var re_c, re_g, re_t;
-            re_t = new RegExp("^" + r.source + "$");
-            if (re_t.test(target)) {
-              switch (o) {
-                case "array":
-                  re_g = new RegExp("" + r.source, "g");
-                  re_c = /(\[.*\])/;
-                  r = re_g.exec(target);
-                  result = [];
-                  while (r != null) {
-                    _this.each(r[1].split(","), function(unit, idx) {
-                      return result.push(_this.parse(unit));
-                    });
-                    break;
-                  }
-                  break;
-                case "number":
-                  result *= 1;
-              }
-              return false;
-            } else {
-              return true;
-            }
-          };
-        })(this));
-        return result;
-      },
-      validator: function(target) {
-        return this.isString(target);
-      },
-      value: "",
-      expose: false
     }
   ]
 };
@@ -1375,6 +1392,38 @@ storage.modules.Core.Array = {
       validator: function() {
         return true;
       }
+    }, {
+
+      /*
+       * 获取第一个单元
+       *
+       * @method   first
+       * @param    target {String/Array/Array-like Object}
+       * @return   {Anything}
+       */
+      name: "first",
+      handler: function(target) {
+        return this.slice(target, 0, 1)[0];
+      },
+      validator: function() {
+        return true;
+      }
+    }, {
+
+      /*
+       * 获取最后一个单元
+       *
+       * @method   last
+       * @param    target {String/Array/Array-like Object}
+       * @return   {Anything}
+       */
+      name: "last",
+      handler: function(target) {
+        return this.slice(target, -1)[0];
+      },
+      validator: function() {
+        return true;
+      }
     }
   ]
 };
@@ -1596,93 +1645,6 @@ storage.modules.Core.String = {
           return string.replace(rtrim, "");
         }
       }
-    }, {
-
-      /*
-       * Returns the characters in a string beginning at the specified location through the specified number of characters.
-       *
-       * @method  substr
-       * @param   string {String}         The input string. Must be one character or longer.
-       * @param   start {Integer}         Location at which to begin extracting characters.
-       * @param   length {Integer}        The number of characters to extract.
-       * @param   ignore {String/RegExp}  Characters to be ignored (will not include in the length).
-       * @return  {String}
-       * 
-       * refer: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substr
-       */
-      name: "substr",
-      handler: function(string, start, length, ignore) {
-        var args, lib;
-        args = arguments;
-        lib = this;
-        if (args.length === 3 && lib.isNumeric(start) && start > 0 && (lib.isString(length) || lib.isRegExp(length))) {
-          string = ignoreSubStr.apply(lib, [string, start, length]);
-        } else if (lib.isNumeric(start) && start >= 0) {
-          if (!lib.isNumeric(length) || length <= 0) {
-            length = string.length;
-          }
-          string = lib.isString(ignore) || lib.isRegExp(ignore) ? ignoreSubStr.apply(lib, [string.substring(start), length, ignore]) : string.substring(start, length);
-        }
-        return string;
-      }
-    }, {
-
-      /*
-       * Return information about characters used in a string.
-       *
-       * Depending on mode will return one of the following:
-       *  - 0: an array with the byte-value as key and the frequency of every byte as value
-       *  - 1: same as 0 but only byte-values with a frequency greater than zero are listed
-       *  - 2: same as 0 but only byte-values with a frequency equal to zero are listed
-       *  - 3: a string containing all unique characters is returned
-       *  - 4: a string containing all not used characters is returned
-       * 
-       * @method  countChars
-       * @param   string {String}
-       * @param   [mode] {Integer}
-       * @return  {JSON}
-       *
-       * refer: http://www.php.net/manual/en/function.count-chars.php
-       */
-      name: "countChars",
-      handler: function(string, mode) {
-        var bytes, chars, lib, result;
-        result = null;
-        lib = this;
-        if (!lib.isInteger(mode) || mode < 0) {
-          mode = 0;
-        }
-        bytes = {};
-        chars = [];
-        lib.each(string, function(chr, idx) {
-          var code;
-          code = chr.charCodeAt(0);
-          if (lib.isNumber(bytes[code])) {
-            return bytes[code]++;
-          } else {
-            bytes[code] = 1;
-            if (lib.inArray(chr, chars) < 0) {
-              return chars.push(chr);
-            }
-          }
-        });
-        switch (mode) {
-          case 0:
-            break;
-          case 1:
-            result = bytes;
-            break;
-          case 2:
-            break;
-          case 3:
-            result = chars.join("");
-            break;
-          case 4:
-            break;
-        }
-        return result;
-      },
-      value: null
     }
   ]
 };

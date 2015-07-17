@@ -13,85 +13,72 @@ module.exports = ( grunt ) ->
     ]
 
   grunt.initConfig
+    repo: info
     pkg: pkg
     meta:
-      src: "src"
-      coffee: "<%= meta.src %>/coffee"
-      proc: "<%= meta.coffee %>/preprocessor"
-      class: "<%= meta.coffee %>/classes"
-      core: "<%= meta.coffee %>/core"
-      dest: "dest"
-      vendors: "vendors"
-      miso: "<%= meta.vendors %>/miso/dest"
-      build: "build"
-      tests: "<%= meta.build %>/tests"
-      tasks: "<%= meta.build %>/tasks"
+      modules: "src/modules"
+      proc: "src/preprocessor"
+      tests: "build/tests"
+      temp: ".<%= pkg.name %>-cache"
     concat:
-      coffee_proc:
-        src: [
-            "<%= meta.proc %>/intro.coffee"
-            "<%= meta.proc %>/variables.coffee"
-            "<%= meta.proc %>/functions.coffee"
-            "<%= meta.proc %>/methods.coffee"
-            "<%= meta.proc %>/outro.coffee"
-          ]
-        dest: "<%= meta.coffee %>/preprocessor.coffee"
       coffee:
-        src: [
-            "<%= meta.coffee %>/intro.coffee"
-            # preprocessor
-            "<%= meta.proc %>/intro.coffee"
-            "<%= meta.proc %>/variables.coffee"
-            "<%= meta.proc %>/functions.coffee"
-            "<%= meta.proc %>/methods.coffee"
-            "<%= meta.proc %>/outro.coffee"
-            # ---
-            "<%= meta.coffee %>/variables.coffee"
-            "<%= meta.coffee %>/functions.coffee"
-            "<%= meta.core %>/builtin.coffee"
-            "<%= meta.core %>/global.coffee"
-            "<%= meta.core %>/object.coffee"
-            "<%= meta.core %>/array.coffee"
-            "<%= meta.core %>/string.coffee"
-            "<%= meta.core %>/date.coffee"
-            "<%= meta.coffee %>/outro.coffee"
-          ]
-        dest: "<%= meta.dest %>/<%= pkg.name %>.coffee"
+        files:
+          "<%= meta.temp %>/preprocessor.coffee": [
+              "<%= meta.proc %>/intro.coffee"
+              "<%= meta.proc %>/variables.coffee"
+              "<%= meta.proc %>/functions.coffee"
+              "<%= meta.proc %>/methods.coffee"
+              "<%= meta.proc %>/outro.coffee"
+            ]
+          "<%= pkg.name %>.coffee": [
+              "src/intro.coffee"
+              "<%= meta.temp %>/preprocessor.coffee"
+              "src/variables.coffee"
+              "src/functions.coffee"
+              "<%= meta.modules %>/builtin.coffee"
+              "<%= meta.modules %>/global.coffee"
+              "<%= meta.modules %>/object.coffee"
+              "<%= meta.modules %>/array.coffee"
+              "<%= meta.modules %>/string.coffee"
+              "<%= meta.modules %>/date.coffee"
+              "src/outro.coffee"
+            ]
       js:
         options:
           process: ( src, filepath ) ->
             return src.replace /@(NAME|VERSION)/g, ( text, key ) ->
               return info[key.toLowerCase()]
         src: [
-            # "<%= meta.miso %>/miso.js"
-            "<%= meta.src %>/intro.js"
-            "<%= meta.src %>/<%= pkg.name %>.js"
-            "<%= meta.src %>/outro.js"
+            "build/intro.js"
+            "<%= meta.temp %>/<%= pkg.name %>.js"
+            "build/outro.js"
           ]
-        dest: "<%= meta.dest %>/<%= pkg.name %>.js"
+        dest: "<%= pkg.name %>.js"
     coffee:
       options:
         bare: true
         separator: "\x20"
       build:
-        src: "<%= meta.dest %>/<%= pkg.name %>.coffee"
-        dest: "<%= meta.src %>/<%= pkg.name %>.js"
-      preprocessor:
-        src: "<%= meta.coffee %>/preprocessor.coffee"
-        dest: "<%= meta.src %>/preprocessor.js"
+        src: "<%= pkg.name %>.coffee"
+        dest: "<%= meta.temp %>/<%= pkg.name %>.js"
     uglify:
       options:
-        banner: "/*! <%= pkg.name %> <%= grunt.template.today('yyyy-mm-dd') %> */\n"
+        banner: "/*!\n" +
+                " * <%= repo.name %> v<%= repo.version %>\n" +
+                " * <%= pkg.homepage %>\n" +
+                " *\n" +
+                " * Copyright Ourai Lin, http://ourai.ws/\n" +
+                " *\n" +
+                " * Date: <%= grunt.template.today('yyyy-mm-dd') %>\n" +
+                " */\n"
+        sourceMap: false
       build:
-        src: "<%= meta.dest %>/<%= pkg.name %>.js"
-        dest: "<%= meta.dest %>/<%= pkg.name %>.min.js"
-    clean:
-      compiled:
-        src: ["<%= meta.dest %>/*.coffee"]
+        src: "<%= pkg.name %>.js"
+        dest: "<%= pkg.name %>.min.js"
     copy:
       test:
         expand: true
-        cwd: "<%= meta.dest %>"
+        cwd: "."
         src: ["**.js"]
         dest: "<%= meta.tests %>"
     jasmine:
@@ -102,7 +89,13 @@ module.exports = ( grunt ) ->
 
   grunt.loadNpmTasks task for task in npmTasks
 
-  grunt.registerTask "preprocessor", ["concat:coffee_proc", "coffee:preprocessor"]
-
-  grunt.registerTask "compile", ["concat:coffee", "coffee:build", "concat:js", "uglify"]
-  grunt.registerTask "default", ["compile", "clean", "copy"]
+  grunt.registerTask "compile", [
+      "concat:coffee"
+      "coffee:build"
+      "concat:js"
+      "uglify"
+    ]
+  grunt.registerTask "default", [
+      "compile"
+      "copy"
+    ]
