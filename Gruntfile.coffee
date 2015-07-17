@@ -18,7 +18,6 @@ module.exports = ( grunt ) ->
     meta:
       modules: "src/modules"
       proc: "src/preprocessor"
-      tests: "build/tests"
       temp: ".<%= pkg.name %>-cache"
     concat:
       coffee:
@@ -80,12 +79,12 @@ module.exports = ( grunt ) ->
         expand: true
         cwd: "."
         src: ["**.js"]
-        dest: "<%= meta.tests %>"
+        dest: "test"
     jasmine:
       test:
-        src: "<%= meta.tests %>/<%= pkg.name %>.js"
+        src: "test/<%= pkg.name %>.js"
         options:
-          specs: "<%= meta.tests %>/*Spec.js"
+          specs: "test/*Spec.js"
 
   grunt.loadNpmTasks task for task in npmTasks
 
